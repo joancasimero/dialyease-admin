@@ -44,6 +44,30 @@ router.get('/debug-users', async (req, res) => {
   }
 });
 
+// Emergency password reset route (temporary for debugging)
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { username, newPassword } = req.body;
+    const Admin = require('../models/Admin');
+    const bcrypt = require('bcryptjs');
+    
+    const admin = await Admin.findOne({ username });
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+    
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+    admin.password = hashedPassword;
+    await admin.save();
+    
+    res.json({ message: `Password reset for ${username}` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.post('/register', registerAdmin);
 router.post('/login', loginAdmin);
 router.get('/me', protect, getAdmin);
