@@ -1,11 +1,16 @@
 import axios from 'axios';
 
-// Debug: Log the API URL being used
-console.log('🔗 API Base URL:', process.env.REACT_APP_API_URL || 'http://localhost:5000/api');
-console.log('🌐 Environment:', process.env.NODE_ENV);
+// Debug environment variables
+console.log('🔧 Environment Variables:', {
+  REACT_APP_API_URL: process.env.REACT_APP_API_URL,
+  NODE_ENV: process.env.NODE_ENV
+});
+
+const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+console.log('🌐 API Base URL:', baseURL);
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: baseURL,
   timeout: 10000, // 10 second timeout
 });
 
