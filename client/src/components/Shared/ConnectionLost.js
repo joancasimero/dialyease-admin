@@ -1,5 +1,6 @@
 import React from 'react';
 import './ConnectionLost.css';
+// Fixed: Replaced GIF with emoji icons
 
 const ConnectionLost = () => {
   return (
