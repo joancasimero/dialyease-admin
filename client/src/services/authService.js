@@ -2,6 +2,11 @@ import axios from 'axios';
 
 const API_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/admin`;
 
+// Debug logging
+console.log('🔧 AuthService Environment Variables:', process.env);
+console.log('🔧 AuthService REACT_APP_API_URL:', process.env.REACT_APP_API_URL);
+console.log('🔧 AuthService API_URL:', API_URL);
+
 // Helper function to decode JWT token
 const decodeToken = (token) => {
   try {
@@ -34,7 +39,10 @@ const register = async (adminData) => {
 };
 
 const login = async (adminData) => {
-  const response = await axios.post(API_URL + '/login', adminData);
+  const loginUrl = API_URL + '/login';
+  console.log('🔐 Login attempt to URL:', loginUrl);
+  console.log('🔐 Login data:', adminData);
+  const response = await axios.post(loginUrl, adminData);
   
   if (response.data && response.data.token) {
     const decodedToken = decodeToken(response.data.token);
