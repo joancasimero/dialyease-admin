@@ -6,7 +6,9 @@ const ConnectionLost = () => {
     <div className="connection-lost-container">
       <div className="connection-lost-content">
         <div className="connection-lost-icon">
-          <img src={require('../../assets/connection-lost.gif')} alt="Connection Lost" width="180" height="180" />
+          <div className="connection-icon">
+            📡❌
+          </div>
         </div>
         <h1>Connection Lost</h1>
         <p>
