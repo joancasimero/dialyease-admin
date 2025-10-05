@@ -21,6 +21,11 @@ const superAdminOnly = (req, res, next) => {
   next();
 };
 
+// Test route to verify admin routes are working
+router.get('/test', (req, res) => {
+  res.json({ message: 'Admin routes are working!', timestamp: new Date().toISOString() });
+});
+
 router.post('/register', registerAdmin);
 router.post('/login', loginAdmin);
 router.get('/me', protect, getAdmin);
