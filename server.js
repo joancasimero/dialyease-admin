@@ -55,6 +55,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Health check routes
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'DialyEase Admin API is running!',
+    status: 'OK',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.get('/api', (req, res) => {
+  res.json({ 
+    message: 'DialyEase Admin API',
+    version: '1.0.0',
+    endpoints: ['/api/admin/login', '/api/patients', '/api/nurses']
+  });
+});
+
 // Register routes
 app.use('/api/machines', machineRoutes);
 app.use('/api/nurses', nurseRoutes);
