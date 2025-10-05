@@ -32,6 +32,30 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const otpStore = {};
 const notifiedPatients = {}; // Keeps track of sent notifications
 
+// Auto-seed admin user function
+async function seedAdminUser() {
+  try {
+    const bcrypt = require('bcryptjs');
+    const Admin = require('./models/Admin');
+    
+    const adminExists = await Admin.findOne({ username: 'admin' });
+    if (!adminExists) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('admin123', salt);
+      
+      await Admin.create({
+        username: 'admin',
+        password: hashedPassword
+      });
+      console.log('✅ Admin user created successfully (username: admin, password: admin123)');
+    } else {
+      console.log('✅ Admin user already exists');
+    }
+  } catch (error) {
+    console.error('❌ Error creating admin user:', error.message);
+  }
+}
+
 // Models
 const Patient = require('./models/Patient');
 const Admin = require('./models/Admin');
@@ -83,8 +107,12 @@ app.use('/api/vitals', vitalRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log('Connected to MongoDB');
+    
+    // Auto-seed admin user
+    await seedAdminUser();
+    
     initializeDefaultMachines();
     initializeTodaySlots();
     // Initialize slots for the next 5 days (including today) on startup
