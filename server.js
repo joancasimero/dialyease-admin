@@ -9,16 +9,24 @@ const cors = require('cors');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const admin = require('firebase-admin');
-const serviceAccount = require('./dialyease-e42ac-firebase-adminsdk-fbsvc-01418afe2b.json');
 const cron = require('node-cron');
 const moment = require('moment-timezone');
 const http = require('http');
 const { Server } = require('socket.io');
 
-// Initialize Firebase Admin
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// Initialize Firebase Admin (optional - only if service account file exists)
+let firebaseInitialized = false;
+try {
+  const serviceAccount = require('./dialyease-e42ac-firebase-adminsdk-fbsvc-01418afe2b.json');
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+  firebaseInitialized = true;
+  console.log('Firebase Admin initialized successfully');
+} catch (error) {
+  console.log('Firebase service account file not found - Firebase features disabled');
+  console.log('To enable Firebase, add your service account file to the project root');
+}
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const otpStore = {};
@@ -822,9 +830,14 @@ app.get('/send-notification', async (req, res) => {
   };
 
   try {
-    const response = await admin.messaging().send(message);
-    console.log('✅ Message sent:', response);
-    res.send('Notification sent!');
+    if (firebaseInitialized) {
+      const response = await admin.messaging().send(message);
+      console.log('✅ Message sent:', response);
+      res.send('Notification sent!');
+    } else {
+      console.log('Firebase not initialized - notification skipped');
+      res.send('Notification skipped (Firebase not configured)');
+    }
   } catch (error) {
     console.error('❌ Error sending message:', error);
     res.status(500).send('Failed to send notification');
@@ -953,8 +966,12 @@ async function sendAppointmentReminder(deviceToken, title, body) {
     notification: { title, body },
   };
   try {
-    await admin.messaging().send(message);
-    console.log('Notification sent:', title, body);
+    if (firebaseInitialized) {
+      await admin.messaging().send(message);
+      console.log('Notification sent:', title, body);
+    } else {
+      console.log('Firebase not initialized - notification skipped:', title, body);
+    }
   } catch (err) {
     console.error('Failed to send notification:', err.message);
   }
@@ -1117,15 +1134,18 @@ app.post('/api/admin/reset-password', async (req, res) => {
   res.json({ message: 'Password reset successful' });
 });
 
-admin.firestore().collection('vitals')
-  .onSnapshot(snapshot => {
-    snapshot.docChanges().forEach(change => {
-      if (change.type === 'added') {
+// Firestore listener (only if Firebase is initialized)
+if (firebaseInitialized) {
+  admin.firestore().collection('vitals')
+    .onSnapshot(snapshot => {
+      snapshot.docChanges().forEach(change => {
+        if (change.type === 'added') {
         const vitals = change.doc.data();
         handleVitals(vitals);
-      }
+        }
+      });
     });
-  });
+}
 
 function handleVitals(vitals) {
   const patientId = vitals.patient;
@@ -1164,6 +1184,11 @@ function handleVitals(vitals) {
 }
 
 async function sendHealthTipNotification(patientId, title, message) {
+  if (!firebaseInitialized) {
+    console.log('Firebase not initialized - health tip notification skipped');
+    return;
+  }
+  
   const patientDoc = await admin.firestore().collection('patients').doc(patientId).get();
   if (!patientDoc.exists) {
     console.error(`Patient Firestore doc not found for ID: ${patientId}`);
@@ -1178,6 +1203,11 @@ async function sendHealthTipNotification(patientId, title, message) {
 }
 
 async function getDeviceToken(patientId) {
+  if (!firebaseInitialized) {
+    console.log('Firebase not initialized - cannot get device token');
+    return null;
+  }
+  
   const patientDoc = await admin.firestore().collection('patients').doc(patientId).get();
   const deviceToken = patientDoc.exists ? patientDoc.data().deviceToken : null;
   return deviceToken;
