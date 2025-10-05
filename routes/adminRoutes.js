@@ -49,17 +49,14 @@ router.post('/reset-password', async (req, res) => {
   try {
     const { username, newPassword } = req.body;
     const Admin = require('../models/Admin');
-    const bcrypt = require('bcryptjs');
     
     const admin = await Admin.findOne({ username });
     if (!admin) {
       return res.status(404).json({ message: 'Admin not found' });
     }
     
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-    
-    admin.password = hashedPassword;
+    // Set password directly and let the pre-save hook handle hashing
+    admin.password = newPassword;
     await admin.save();
     
     res.json({ message: `Password reset for ${username}` });
