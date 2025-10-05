@@ -41,7 +41,7 @@ function AppContent() {
     let intervalId;
     const pingServer = async () => {
       try {
-        await api.get('/machines'); // Use a public endpoint
+        await api.get('/'); // Use the health check endpoint
         setIsConnected(true);
       } catch {
         setIsConnected(false);
