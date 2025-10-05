@@ -44,10 +44,11 @@ const generateToken = (id, role) => {
 
 const loginAdmin = async (req, res) => {
   try {
+    console.log('🔐 Login attempt received:', req.body);
     const { username, password } = req.body;
     
     const admin = await Admin.findOne({ username });
-    console.log('Login attempt:', username, 'Found:', !!admin);
+    console.log('👤 Login attempt:', username, 'Found admin:', !!admin);
     if (admin) {
       const match = await bcrypt.compare(password, admin.password);
       console.log('Password match:', match);
