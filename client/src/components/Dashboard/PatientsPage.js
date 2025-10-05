@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 import {
   Table,
   Form,
@@ -37,7 +39,7 @@ const PatientsPage = () => {
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/patients");
+      const response = await axios.get(`${API_BASE_URL}/patients`);
       setPatients((response.data.data || response.data).filter(p => p.approved));
     } catch (error) {
       console.error("Error fetching patients:", error);
@@ -48,7 +50,7 @@ const PatientsPage = () => {
 
   const fetchArchivedPatients = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/patients/archived");
+      const response = await axios.get(`${API_BASE_URL}/patients/archived`);
       setArchivedPatients(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (error) {
       console.error("Error fetching archived patients:", error);
@@ -87,7 +89,7 @@ const PatientsPage = () => {
     e.preventDefault();
     try {
       const response = await axios.put(
-        `http://localhost:5000/api/patients/${editPatient._id}`,
+        `${API_BASE_URL}/patients/${editPatient._id}`,
         editPatient
       );
       const updatedPatient = response.data.patient || response.data;
@@ -111,7 +113,7 @@ const PatientsPage = () => {
   const confirmArchive = async () => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/patients/${deletePatientId}`
+        `${API_BASE_URL}/patients/${deletePatientId}`
       );
       setPatients((prev) => prev.filter((p) => p._id !== deletePatientId));
       fetchArchivedPatients(); 
@@ -125,7 +127,7 @@ const PatientsPage = () => {
 
   const handleRestore = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/patients/${id}/restore`);
+      await axios.put(`${API_BASE_URL}/patients/${id}/restore`);
       fetchPatients();
       fetchArchivedPatients();
     } catch (error) {
@@ -143,7 +145,7 @@ const PatientsPage = () => {
   const confirmDelete = async () => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/patients/${deletePatientId}`
+        `${API_BASE_URL}/patients/${deletePatientId}`
       );
       setPatients((prev) => prev.filter((p) => p._id !== deletePatientId));
       setShowDeleteModal(false);
@@ -177,7 +179,7 @@ const PatientsPage = () => {
 
   const exportPatientsPDF = async (patientsToExport) => {
     try {
-      const response = await fetch('http://localhost:5000/api/patients/export/pdf', {
+      const response = await fetch(`${API_BASE_URL}/patients/export/pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ patients: patientsToExport }),
@@ -200,7 +202,7 @@ const PatientsPage = () => {
 
   const exportSinglePatientPDF = async (patient) => {
     try {
-      const response = await fetch('http://localhost:5000/api/patients/export/pdf', {
+      const response = await fetch(`${API_BASE_URL}/patients/export/pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ patients: [patient] }),

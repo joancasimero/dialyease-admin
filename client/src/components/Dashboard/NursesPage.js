@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 import {
   Table,
   Form,
@@ -34,8 +36,8 @@ const NursesPage = () => {
   const fetchNurses = async () => {
     try {
       const endpoint = showArchived 
-        ? "http://localhost:5000/api/nurses/archived"
-        : "http://localhost:5000/api/nurses";
+        ? `${API_BASE_URL}/nurses/archived`
+        : `${API_BASE_URL}/nurses`;
       const res = await axios.get(endpoint);
       
       if (showArchived) {
@@ -53,7 +55,7 @@ const NursesPage = () => {
   const handleArchiveNurse = async (id) => {
     if (window.confirm('Are you sure you want to archive this nurse?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/nurses/${id}`);
+        await axios.delete(`${API_BASE_URL}/nurses/${id}`);
         fetchNurses();
       } catch (err) {
         alert('Failed to archive nurse');
@@ -64,7 +66,7 @@ const NursesPage = () => {
   const handleRestoreNurse = async (id) => {
     if (window.confirm('Are you sure you want to restore this nurse?')) {
       try {
-        await axios.put(`http://localhost:5000/api/nurses/${id}/restore`);
+        await axios.put(`${API_BASE_URL}/nurses/${id}/restore`);
         fetchNurses();
       } catch (err) {
         alert('Failed to restore nurse');
@@ -94,10 +96,10 @@ const NursesPage = () => {
   const exportNursesPDF = async () => {
     try {
       const nursesToExport = showArchived ? 
-        await axios.get('http://localhost:5000/api/nurses/archived').then(res => res.data.data || res.data) :
+        await axios.get(`${API_BASE_URL}/nurses/archived`).then(res => res.data.data || res.data) :
         nurses;
         
-      const response = await fetch('http://localhost:5000/api/nurses/export/pdf', {
+      const response = await fetch(`${API_BASE_URL}/nurses/export/pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nurses: nursesToExport }),
@@ -120,7 +122,7 @@ const NursesPage = () => {
 
   const exportSingleNursePDF = async (nurse) => {
     try {
-      const response = await fetch('http://localhost:5000/api/nurses/export/pdf', {
+      const response = await fetch(`${API_BASE_URL}/nurses/export/pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nurses: [nurse] }),
