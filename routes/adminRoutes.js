@@ -26,6 +26,24 @@ router.get('/test', (req, res) => {
   res.json({ message: 'Admin routes are working!', timestamp: new Date().toISOString() });
 });
 
+// Debug route to list admin usernames (temporary)
+router.get('/debug-users', async (req, res) => {
+  try {
+    const Admin = require('../models/Admin');
+    const admins = await Admin.find({}, 'username isActive role');
+    res.json({ 
+      count: admins.length,
+      users: admins.map(admin => ({
+        username: admin.username,
+        isActive: admin.isActive,
+        role: admin.role
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.post('/register', registerAdmin);
 router.post('/login', loginAdmin);
 router.get('/me', protect, getAdmin);
