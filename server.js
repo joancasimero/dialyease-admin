@@ -38,6 +38,13 @@ async function seedAdminUser() {
     const bcrypt = require('bcryptjs');
     const Admin = require('./models/Admin');
     
+    // Check all existing admins
+    const allAdmins = await Admin.find({});
+    console.log(`📊 Found ${allAdmins.length} admin(s) in database:`);
+    allAdmins.forEach(admin => {
+      console.log(`   - Username: ${admin.username}, ID: ${admin._id}`);
+    });
+    
     const adminExists = await Admin.findOne({ username: 'admin' });
     if (!adminExists) {
       const salt = await bcrypt.genSalt(10);
