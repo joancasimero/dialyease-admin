@@ -769,15 +769,58 @@ router.post('/export/pdf', async (req, res) => {
 });
 
 router.post('/device-token', async (req, res) => {
-  const { patientId, deviceToken } = req.body;
-  // Update MongoDB
-  await Patient.findByIdAndUpdate(patientId, { deviceToken });
-  // Optionally, update Firestore
-  await admin.firestore().collection('patients').doc(patientId).set(
-    { deviceToken },
-    { merge: true }
-  );
-  res.json({ success: true });
+  try {
+    const { patientId, deviceToken } = req.body;
+    
+    if (!patientId || !deviceToken) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'patientId and deviceToken are required' 
+      });
+    }
+    
+    // Update MongoDB
+    const updatedPatient = await Patient.findByIdAndUpdate(
+      patientId, 
+      { deviceToken },
+      { new: true }
+    );
+    
+    if (!updatedPatient) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Patient not found' 
+      });
+    }
+    
+    console.log(`📱 Device token saved for patient: ${updatedPatient.firstName} ${updatedPatient.lastName}`);
+    
+    // Optionally, update Firestore only if Firebase is initialized
+    try {
+      if (admin.apps.length > 0) {
+        await admin.firestore().collection('patients').doc(patientId).set(
+          { deviceToken },
+          { merge: true }
+        );
+        console.log('✅ Device token also saved to Firestore');
+      }
+    } catch (firebaseError) {
+      // Firebase is optional, don't fail if it's not available
+      console.log('⚠️ Firestore update skipped (Firebase not initialized)');
+    }
+    
+    res.json({ 
+      success: true,
+      message: 'Device token saved successfully' 
+    });
+  } catch (err) {
+    console.error('Error saving device token:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error',
+      error: err.message 
+    });
+  }
 });
 
 router.put('/:id/next-appointment', async (req, res) => {

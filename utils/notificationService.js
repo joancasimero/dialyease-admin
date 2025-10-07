@@ -11,7 +11,7 @@ const admin = require('firebase-admin');
 const sendPushNotification = async (deviceToken, notification, data = {}) => {
   try {
     // Check if Firebase is initialized
-    if (!admin.apps.length) {
+    if (!admin.apps || admin.apps.length === 0) {
       console.warn('⚠️ Firebase not initialized. Push notification skipped.');
       return { success: false, reason: 'Firebase not initialized' };
     }
