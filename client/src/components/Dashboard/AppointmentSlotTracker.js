@@ -848,167 +848,167 @@ const AppointmentSlotTracker = ({ authToken }) => {
           {slotData && (
             <>
               {/* Statistics */}
-              <Row className="mb-4" style={{ gap: '1rem', margin: '0 -0.5rem' }}>
-                <Col md={3} style={{ padding: '0 0.5rem' }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4, 1fr)',
+                gap: '1rem',
+                marginBottom: '2rem'
+              }}>
+                <div style={{
+                  background: 'white',
+                  borderRadius: '16px',
+                  padding: '1.5rem',
+                  textAlign: 'center',
+                  border: '2px solid rgba(42, 63, 157, 0.1)',
+                  boxShadow: '0 4px 16px rgba(42, 63, 157, 0.08)',
+                  fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(42, 63, 157, 0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(42, 63, 157, 0.08)';
+                }}>
                   <div style={{
-                    background: 'white',
-                    borderRadius: '16px',
-                    padding: '1.5rem',
-                    textAlign: 'center',
-                    border: '2px solid rgba(42, 63, 157, 0.1)',
-                    boxShadow: '0 4px 16px rgba(42, 63, 157, 0.08)',
-                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(42, 63, 157, 0.15)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(42, 63, 157, 0.08)';
+                    width: '48px',
+                    height: '48px',
+                    margin: '0 auto 0.75rem',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, rgba(42, 63, 157, 0.1) 0%, rgba(74, 108, 247, 0.15) 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}>
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      margin: '0 auto 0.75rem',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, rgba(42, 63, 157, 0.1) 0%, rgba(74, 108, 247, 0.15) 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="4" y="4" width="16" height="16" rx="2" stroke="#2a3f9d" strokeWidth="2"/>
-                        <path d="M8 2v4M16 2v4M4 10h16" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                    </div>
-                    <div style={{ color: '#2a3f9d', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
-                      {slotData.totalSlots}
-                    </div>
-                    <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Total Slots</div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="4" y="4" width="16" height="16" rx="2" stroke="#2a3f9d" strokeWidth="2"/>
+                      <path d="M8 2v4M16 2v4M4 10h16" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
                   </div>
-                </Col>
-                <Col md={3} style={{ padding: '0 0.5rem' }}>
+                  <div style={{ color: '#2a3f9d', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
+                    {slotData.totalSlots}
+                  </div>
+                  <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Total Slots</div>
+                </div>
+                
+                <div style={{
+                  background: 'white',
+                  borderRadius: '16px',
+                  padding: '1.5rem',
+                  textAlign: 'center',
+                  border: '2px solid rgba(16, 185, 129, 0.2)',
+                  boxShadow: '0 4px 16px rgba(16, 185, 129, 0.12)',
+                  fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(16, 185, 129, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(16, 185, 129, 0.12)';
+                }}>
                   <div style={{
-                    background: 'white',
-                    borderRadius: '16px',
-                    padding: '1.5rem',
-                    textAlign: 'center',
-                    border: '2px solid rgba(16, 185, 129, 0.2)',
-                    boxShadow: '0 4px 16px rgba(16, 185, 129, 0.12)',
-                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(16, 185, 129, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(16, 185, 129, 0.12)';
+                    width: '48px',
+                    height: '48px',
+                    margin: '0 auto 0.75rem',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}>
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      margin: '0 auto 0.75rem',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="9" stroke="#10b981" strokeWidth="2"/>
-                        <path d="M9 12l2 2l4-4" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                    <div style={{ color: '#059669', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
-                      {slotData.availableSlots}
-                    </div>
-                    <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Available</div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="9" stroke="#10b981" strokeWidth="2"/>
+                      <path d="M9 12l2 2l4-4" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
-                </Col>
-                <Col md={3} style={{ padding: '0 0.5rem' }}>
+                  <div style={{ color: '#059669', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
+                    {slotData.availableSlots}
+                  </div>
+                  <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Available</div>
+                </div>
+                
+                <div style={{
+                  background: 'white',
+                  borderRadius: '16px',
+                  padding: '1.5rem',
+                  textAlign: 'center',
+                  border: '2px solid rgba(220, 38, 38, 0.2)',
+                  boxShadow: '0 4px 16px rgba(220, 38, 38, 0.12)',
+                  fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(220, 38, 38, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(220, 38, 38, 0.12)';
+                }}>
                   <div style={{
-                    background: 'white',
-                    borderRadius: '16px',
-                    padding: '1.5rem',
-                    textAlign: 'center',
-                    border: '2px solid rgba(220, 38, 38, 0.2)',
-                    boxShadow: '0 4px 16px rgba(220, 38, 38, 0.12)',
-                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(220, 38, 38, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(220, 38, 38, 0.12)';
+                    width: '48px',
+                    height: '48px',
+                    margin: '0 auto 0.75rem',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.15) 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}>
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      margin: '0 auto 0.75rem',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.15) 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="12" cy="12" r="9" stroke="#dc2626" strokeWidth="2"/>
-                        <path d="M15 9l-6 6M9 9l6 6" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                    </div>
-                    <div style={{ color: '#dc2626', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
-                      {slotData.bookedSlots}
-                    </div>
-                    <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Booked</div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="9" stroke="#dc2626" strokeWidth="2"/>
+                      <path d="M15 9l-6 6M9 9l6 6" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
                   </div>
-                </Col>
-                <Col md={3} style={{ padding: '0 0.5rem' }}>
+                  <div style={{ color: '#dc2626', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
+                    {slotData.bookedSlots}
+                  </div>
+                  <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Booked</div>
+                </div>
+                
+                <div style={{
+                  background: 'white',
+                  borderRadius: '16px',
+                  padding: '1.5rem',
+                  textAlign: 'center',
+                  border: '2px solid rgba(124, 58, 237, 0.2)',
+                  boxShadow: '0 4px 16px rgba(124, 58, 237, 0.12)',
+                  fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-4px)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(124, 58, 237, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 16px rgba(124, 58, 237, 0.12)';
+                }}>
                   <div style={{
-                    background: 'white',
-                    borderRadius: '16px',
-                    padding: '1.5rem',
-                    textAlign: 'center',
-                    border: '2px solid rgba(124, 58, 237, 0.2)',
-                    boxShadow: '0 4px 16px rgba(124, 58, 237, 0.12)',
-                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(124, 58, 237, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(124, 58, 237, 0.12)';
+                    width: '48px',
+                    height: '48px',
+                    margin: '0 auto 0.75rem',
+                    borderRadius: '12px',
+                    background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(109, 40, 217, 0.15) 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
                   }}>
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      margin: '0 auto 0.75rem',
-                      borderRadius: '12px',
-                      background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(109, 40, 217, 0.15) 100%)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13 2L3 14h9l-1 8l10-12h-9l1-8z" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                    <div style={{ color: '#7c3aed', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
-                      {Math.round((slotData.bookedSlots / slotData.totalSlots) * 100)}%
-                    </div>
-                    <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Utilization</div>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M13 2L3 14h9l-1 8l10-12h-9l1-8z" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
-                </Col>
-              </Row>
+                  <div style={{ color: '#7c3aed', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
+                    {Math.round((slotData.bookedSlots / slotData.totalSlots) * 100)}%
+                  </div>
+                  <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Utilization</div>
+                </div>
+              </div>
 
               {/* Morning Slots */}
               <div className="mb-4">
