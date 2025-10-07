@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../services/api";
 import {
   Table,
   Form,
@@ -11,8 +11,6 @@ import {
   Col,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const PatientsPage = () => {
   const [patients, setPatients] = useState([]);
@@ -39,7 +37,7 @@ const PatientsPage = () => {
 
   const fetchPatients = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/patients`);
+      const response = await api.get('/patients');
       setPatients((response.data.data || response.data).filter(p => p.approved));
     } catch (error) {
       console.error("Error fetching patients:", error);
