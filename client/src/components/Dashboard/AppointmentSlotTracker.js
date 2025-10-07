@@ -248,24 +248,25 @@ const AppointmentSlotTracker = ({ authToken }) => {
     slotGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(5, 1fr)',
-      gap: '18px',
-      padding: '1.5rem 0',
+      gap: '1rem',
+      padding: '0',
       background: 'transparent',
       borderRadius: '12px',
     },
     slotItem: {
-      padding: '1.1rem 0.5rem',
-      borderRadius: '28px',
+      padding: '1.25rem 0.75rem',
+      borderRadius: '16px',
       textAlign: 'center',
       fontSize: '1rem',
-      fontWeight: '600',
+      fontWeight: '700',
       cursor: 'pointer',
-      transition: 'all 0.2s cubic-bezier(0.4,0,0.2,1)',
-      border: '2px solid #e5e7eb',
-      background: '#fff',
-      boxShadow: '0 2px 8px rgba(38, 58, 153, 0.04)',
-      color: '#263a99',
+      transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+      border: '2px solid rgba(42, 63, 157, 0.15)',
+      background: 'white',
+      boxShadow: '0 4px 12px rgba(42, 63, 157, 0.08)',
+      color: '#1e293b',
       position: 'relative',
+      fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
     },
     slotItemHover: {
       boxShadow: '0 4px 16px rgba(38, 58, 153, 0.10)',
@@ -703,34 +704,96 @@ const AppointmentSlotTracker = ({ authToken }) => {
           </div>
         </div>
 
-        <Card.Body style={{ padding: '1.5rem' }}>
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5 style={{ color: '#2a3f9d', fontWeight: 700, margin: 0 }}>
-              <FiCalendar style={{ marginRight: '0.5rem' }} />
-              Appointment Slot Tracker
-            </h5>
-            <div className="d-flex gap-2 align-items-center">
-              <span style={{ fontWeight: 700, color: '#263a99', fontSize: '1.1rem', letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <FiCalendar style={{ fontSize: '1.3rem', marginRight: '0.2rem' }} />
-                Date:
-              </span>
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                dateFormat="yyyy-MM-dd"
-                className="form-control"
-                popperPlacement="bottom"
-                calendarClassName="custom-datepicker-calendar"
-                wrapperClassName="custom-datepicker-wrapper"
-                style={{ width: 'auto', borderRadius: '12px', fontWeight: 600, fontSize: '1.1rem', boxShadow: 'none', border: '2px solid #263a99', background: '#f5faff', color: '#263a99', padding: '0.7rem 1.2rem', minWidth: '140px' }}
-              />
+        <Card.Body style={{ padding: '2rem 2.5rem' }}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '2rem',
+            paddingBottom: '1.5rem',
+            borderBottom: '2px solid rgba(42, 63, 157, 0.1)'
+          }}>
+            <div>
+              <h5 style={{
+                color: '#1e293b',
+                fontWeight: 800,
+                margin: 0,
+                fontSize: '1.6rem',
+                letterSpacing: '-0.025em',
+                fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem'
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+                  <rect x="3" y="6" width="18" height="15" rx="2" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M3 10h18" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M8 3v4" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M16 3v4" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                Appointment Slot Tracker
+              </h5>
+              <p style={{
+                color: '#64748b',
+                margin: 0,
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                marginTop: '0.5rem',
+                fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+              }}>
+                Real-time slot availability and booking management
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style={{
+                  fontWeight: 700,
+                  color: '#1e293b',
+                  fontSize: '0.95rem',
+                  letterSpacing: '-0.025em',
+                  fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+                }}>
+                  Date:
+                </span>
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={handleDateChange}
+                  dateFormat="yyyy-MM-dd"
+                  className="form-control"
+                  popperPlacement="bottom"
+                  calendarClassName="custom-datepicker-calendar"
+                  wrapperClassName="custom-datepicker-wrapper"
+                  style={{
+                    width: 'auto',
+                    borderRadius: '10px',
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    boxShadow: '0 2px 8px rgba(42, 63, 157, 0.1)',
+                    border: '2px solid rgba(42, 63, 157, 0.2)',
+                    background: 'white',
+                    color: '#2a3f9d',
+                    padding: '0.6rem 1rem',
+                    minWidth: '150px',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+                  }}
+                />
+              </div>
               {!slotData && (
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={initializeSlots}
                   disabled={loading}
-                  style={{ borderRadius: '8px' }}
+                  style={{
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%)',
+                    border: 'none',
+                    fontWeight: 700,
+                    padding: '0.6rem 1.25rem',
+                    fontSize: '0.9rem',
+                    boxShadow: '0 4px 12px rgba(42, 63, 157, 0.25)',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+                  }}
                 >
                   Initialize Slots
                 </Button>
@@ -785,46 +848,200 @@ const AppointmentSlotTracker = ({ authToken }) => {
           {slotData && (
             <>
               {/* Statistics */}
-              <Row className="mb-4">
-                <Col md={3}>
-                  <div style={styles.statsCard}>
-                    <div style={{ color: '#2a3f9d', fontSize: '1.5rem', fontWeight: 700 }}>
+              <Row className="mb-4" style={{ gap: '1rem', margin: '0 -0.5rem' }}>
+                <Col md={3} style={{ padding: '0 0.5rem' }}>
+                  <div style={{
+                    background: 'white',
+                    borderRadius: '16px',
+                    padding: '1.5rem',
+                    textAlign: 'center',
+                    border: '2px solid rgba(42, 63, 157, 0.1)',
+                    boxShadow: '0 4px 16px rgba(42, 63, 157, 0.08)',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(42, 63, 157, 0.15)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(42, 63, 157, 0.08)';
+                  }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      margin: '0 auto 0.75rem',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, rgba(42, 63, 157, 0.1) 0%, rgba(74, 108, 247, 0.15) 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="4" y="4" width="16" height="16" rx="2" stroke="#2a3f9d" strokeWidth="2"/>
+                        <path d="M8 2v4M16 2v4M4 10h16" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    </div>
+                    <div style={{ color: '#2a3f9d', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
                       {slotData.totalSlots}
                     </div>
-                    <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Total Slots</div>
+                    <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Total Slots</div>
                   </div>
                 </Col>
-                <Col md={3}>
-                  <div style={styles.statsCard}>
-                    <div style={{ color: '#059669', fontSize: '1.5rem', fontWeight: 700 }}>
+                <Col md={3} style={{ padding: '0 0.5rem' }}>
+                  <div style={{
+                    background: 'white',
+                    borderRadius: '16px',
+                    padding: '1.5rem',
+                    textAlign: 'center',
+                    border: '2px solid rgba(16, 185, 129, 0.2)',
+                    boxShadow: '0 4px 16px rgba(16, 185, 129, 0.12)',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(16, 185, 129, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(16, 185, 129, 0.12)';
+                  }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      margin: '0 auto 0.75rem',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.15) 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="#10b981" strokeWidth="2"/>
+                        <path d="M9 12l2 2l4-4" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <div style={{ color: '#059669', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
                       {slotData.availableSlots}
                     </div>
-                    <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Available</div>
+                    <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Available</div>
                   </div>
                 </Col>
-                <Col md={3}>
-                  <div style={styles.statsCard}>
-                    <div style={{ color: '#dc2626', fontSize: '1.5rem', fontWeight: 700 }}>
+                <Col md={3} style={{ padding: '0 0.5rem' }}>
+                  <div style={{
+                    background: 'white',
+                    borderRadius: '16px',
+                    padding: '1.5rem',
+                    textAlign: 'center',
+                    border: '2px solid rgba(220, 38, 38, 0.2)',
+                    boxShadow: '0 4px 16px rgba(220, 38, 38, 0.12)',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(220, 38, 38, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(220, 38, 38, 0.12)';
+                  }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      margin: '0 auto 0.75rem',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.15) 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="#dc2626" strokeWidth="2"/>
+                        <path d="M15 9l-6 6M9 9l6 6" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    </div>
+                    <div style={{ color: '#dc2626', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
                       {slotData.bookedSlots}
                     </div>
-                    <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Booked</div>
+                    <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Booked</div>
                   </div>
                 </Col>
-                <Col md={3}>
-                  <div style={styles.statsCard}>
-                    <div style={{ color: '#7c3aed', fontSize: '1.5rem', fontWeight: 700 }}>
+                <Col md={3} style={{ padding: '0 0.5rem' }}>
+                  <div style={{
+                    background: 'white',
+                    borderRadius: '16px',
+                    padding: '1.5rem',
+                    textAlign: 'center',
+                    border: '2px solid rgba(124, 58, 237, 0.2)',
+                    boxShadow: '0 4px 16px rgba(124, 58, 237, 0.12)',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(124, 58, 237, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 16px rgba(124, 58, 237, 0.12)';
+                  }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      margin: '0 auto 0.75rem',
+                      borderRadius: '12px',
+                      background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(109, 40, 217, 0.15) 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 2L3 14h9l-1 8l10-12h-9l1-8z" stroke="#7c3aed" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </div>
+                    <div style={{ color: '#7c3aed', fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.05em', marginBottom: '0.25rem' }}>
                       {Math.round((slotData.bookedSlots / slotData.totalSlots) * 100)}%
                     </div>
-                    <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>Utilization</div>
+                    <div style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.025em' }}>Utilization</div>
                   </div>
                 </Col>
               </Row>
 
               {/* Morning Slots */}
               <div className="mb-4">
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h6 style={{ color: '#2a3f9d', fontWeight: 600, margin: 0 }}>
-                    <FiClock style={{ marginRight: '0.5rem' }} />
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  marginBottom: '1.25rem',
+                  paddingBottom: '0.75rem',
+                  borderBottom: '2px solid rgba(42, 63, 157, 0.1)'
+                }}>
+                  <div style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, rgba(42, 63, 157, 0.1) 0%, rgba(74, 108, 247, 0.15) 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="9" stroke="#2a3f9d" strokeWidth="2"/>
+                      <path d="M12 6v6l4 2" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  <h6 style={{
+                    color: '#1e293b',
+                    fontWeight: 700,
+                    margin: 0,
+                    fontSize: '1.15rem',
+                    letterSpacing: '-0.025em',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+                  }}>
                     Morning Slots
                   </h6>
                 </div>
@@ -861,9 +1078,36 @@ const AppointmentSlotTracker = ({ authToken }) => {
 
               {/* Afternoon Slots */}
               <div>
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h6 style={{ color: '#2a3f9d', fontWeight: 600, margin: 0 }}>
-                    <FiClock style={{ marginRight: '0.5rem' }} />
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  marginBottom: '1.25rem',
+                  paddingBottom: '0.75rem',
+                  borderBottom: '2px solid rgba(42, 63, 157, 0.1)'
+                }}>
+                  <div style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, rgba(42, 63, 157, 0.1) 0%, rgba(74, 108, 247, 0.15) 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="12" r="9" stroke="#2a3f9d" strokeWidth="2"/>
+                      <path d="M12 6v6l4 2" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
+                  <h6 style={{
+                    color: '#1e293b',
+                    fontWeight: 700,
+                    margin: 0,
+                    fontSize: '1.15rem',
+                    letterSpacing: '-0.025em',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+                  }}>
                     Afternoon Slots
                   </h6>
                 </div>
