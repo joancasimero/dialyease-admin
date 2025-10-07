@@ -27,8 +27,8 @@ const ApprovalPage = () => {
     try {
       console.log('Fetching pending approvals...'); // Debug log
       const [patientsRes, nursesRes] = await Promise.all([
-        api.get('/approval/patients', { headers: authHeader }),
-        api.get('/approval/nurses', { headers: authHeader })
+        api.get('/patients', { headers: authHeader }),
+        api.get('/nurses', { headers: authHeader })
       ]);
       
       console.log('Patients response:', patientsRes.data); // Debug log

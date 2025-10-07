@@ -18,8 +18,8 @@ const CustomNavbar = () => {
         const token = admin?.token;
         const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
         const [patientsRes, nursesRes] = await Promise.all([
-          api.get('/approval/patients', { headers: authHeader }),
-          api.get('/approval/nurses', { headers: authHeader })
+          api.get('/patients', { headers: authHeader }),
+          api.get('/nurses', { headers: authHeader })
         ]);
         setPendingCount((patientsRes.data?.length || 0) + (nursesRes.data?.length || 0));
       } catch {
