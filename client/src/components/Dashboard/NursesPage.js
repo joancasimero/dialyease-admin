@@ -150,155 +150,202 @@ const NursesPage = () => {
   return (
     <div
       style={{
-        background: "linear-gradient(to right, #e6f0ff, #f9fbfd)",
+        background: "linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%)",
         minHeight: "100vh",
-        padding: "40px 20px",
-        fontFamily: "Segoe UI, sans-serif",
+        padding: "2.5rem 1.5rem",
+        fontFamily: "'Inter Tight', 'Inter', 'Segoe UI', sans-serif",
       }}
     >
       <div style={{ marginLeft: 240 }}>
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+          {/* Header Section */}
           <div
             style={{
+              marginBottom: "2rem",
+              background: "linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%)",
+              padding: "2rem 2.5rem",
+              borderRadius: "20px",
+              boxShadow: "0 8px 24px rgba(42, 63, 157, 0.15)",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               flexWrap: "wrap",
               gap: "1.5rem",
-              marginBottom: "2.2rem",
-              marginTop: "0.5rem",
             }}
           >
-            <h2
-              className="mb-0 fw-bold"
-              style={{
-                fontSize: "2.3rem",
-                fontWeight: 800,
-                letterSpacing: "-1px",
-                color: "#263a99",
-                lineHeight: 1.1,
-                background: "linear-gradient(90deg, #263a99 60%, #4a6cf7 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                display: "inline-block",
-                textShadow: "0 2px 12px rgba(42,63,157,0.08)",
-                borderRadius: "12px",
-                padding: "0.2rem 1.2rem",
-                boxShadow: "0 4px 18px rgba(42,63,157,0.07)",
-                letterSpacing: "0.5px",
-                marginBottom: 0,
-              }}
-            >
-              {showArchived ? 'Archived Nurses' : 'Nurses List'}
-            </h2>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <Button
-                variant={showArchived ? "outline-primary" : "primary"}
-                onClick={() => setShowArchived(!showArchived)}
-                style={{ fontWeight: 600 }}
-              >
-                {showArchived ? 'Show Active' : 'Show Archived'}
-              </Button>
-              <Form.Group
-                controlId="search"
+            <div>
+              <h2
                 style={{
-                  marginBottom: 0,
-                  minWidth: 320,
-                  flex: 1,
-                  maxWidth: 400,
+                  fontSize: "2rem",
+                  fontWeight: 800,
+                  color: "#ffffff",
+                  marginBottom: "0.5rem",
+                  letterSpacing: "-0.5px",
+                  fontFamily: "'Inter Tight', sans-serif",
                 }}
               >
-                <div
-                  style={{
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    background: "#f4f6fb",
-                    borderRadius: "12px",
-                    boxShadow: "0 2px 8px rgba(42,63,157,0.05)",
-                    border: "1px solid #e0e7ef",
-                    padding: "2px 12px 2px 0",
-                    transition: "box-shadow 0.2s",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "1.25rem",
-                      color: "#4a6cf7",
-                      marginLeft: 14,
-                      marginRight: 8,
-                      opacity: 0.85,
-                      pointerEvents: "none",
-                    }}
-                  >
-                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                      <circle
-                        cx="11"
-                        cy="11"
-                        r="7"
-                        stroke="#4a6cf7"
-                        strokeWidth="2"
-                      />
-                      <path
-                        stroke="#4a6cf7"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        d="M20 20l-3.5-3.5"
-                      />
-                    </svg>
-                  </span>
-                  <Form.Control
-                    type="text"
-                    placeholder="Search by nurse name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      boxShadow: "none",
-                      outline: "none",
-                      fontSize: "1.08rem",
-                      padding: "10px 8px 10px 0",
-                      borderRadius: "12px",
-                      color: "#263a99",
-                      fontWeight: 500,
-                      width: "100%",
-                    }}
-                  />
-                </div>
-              </Form.Group>
-              <Button
-                variant="outline-success"
-                style={{ fontWeight: 600 }}
-                onClick={exportNursesPDF}
+                {showArchived ? '🗄️ Archived Nurses' : '👨‍⚕️ Nurses Management'}
+              </h2>
+              <p
+                style={{
+                  color: "rgba(255, 255, 255, 0.9)",
+                  marginBottom: 0,
+                  fontSize: "1rem",
+                  fontWeight: 500,
+                }}
               >
-                <i className="bi bi-file-earmark-pdf"></i> Export PDF
+                {showArchived ? 'View archived nurse records' : 'View and manage all nursing staff'}
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+              <Button
+                onClick={() => setShowArchived(!showArchived)}
+                style={{
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  borderRadius: "10px",
+                  padding: "0.75rem 1.5rem",
+                  border: "2px solid rgba(255, 255, 255, 0.3)",
+                  background: "rgba(255, 255, 255, 0.15)",
+                  backdropFilter: "blur(10px)",
+                  color: "#fff",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                  transition: "all 0.2s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {showArchived ? (
+                    <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  ) : (
+                    <path d="M21 8v13H3V8M1 3h22v5H1V3zm9 5v13m4-13v13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  )}
+                </svg>
+                {showArchived ? 'Show Active' : 'Show Archived'}
+              </Button>
+              <Button
+                onClick={exportNursesPDF}
+                style={{
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  borderRadius: "10px",
+                  padding: "0.75rem 1.5rem",
+                  border: "none",
+                  background: "#ffffff",
+                  color: "#2a3f9d",
+                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+                  transition: "all 0.2s ease",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 6px 16px rgba(0, 0, 0, 0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.1)";
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Export PDF
               </Button>
             </div>
+          </div>
+
+          {/* Search Section */}
+          <div
+            style={{
+              background: "#ffffff",
+              padding: "1.5rem 2rem",
+              borderRadius: "16px",
+              boxShadow: "0 4px 12px rgba(42, 63, 157, 0.08)",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <Form.Group controlId="search" style={{ marginBottom: 0 }}>
+              <div
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  alignItems: "center",
+                  background: "#f8fafc",
+                  borderRadius: "12px",
+                  border: "2px solid rgba(42, 63, 157, 0.1)",
+                  padding: "0.75rem 1rem",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{ marginRight: "0.75rem", flexShrink: 0 }}
+                >
+                  <circle cx="11" cy="11" r="8" stroke="#4a6cf7" strokeWidth="2"/>
+                  <path d="M21 21l-4.35-4.35" stroke="#4a6cf7" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                <Form.Control
+                  type="text"
+                  placeholder="Search nurses by name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    border: "none",
+                    background: "transparent",
+                    boxShadow: "none",
+                    outline: "none",
+                    fontSize: "1rem",
+                    padding: 0,
+                    color: "#2a3f9d",
+                    fontWeight: 600,
+                    fontFamily: "'Inter Tight', sans-serif",
+                  }}
+                />
+              </div>
+            </Form.Group>
           </div>
 
           <div
             style={{
               backgroundColor: "#fff",
               borderRadius: "20px",
-              boxShadow: "0 10px 25px rgba(42,63,157,0.08)",
-              padding: "0",
+              boxShadow: "0 8px 24px rgba(42, 63, 157, 0.1)",
               overflow: "hidden",
             }}
           >
             {loading ? (
               <div className="text-center py-5">
-                <Spinner animation="border" variant="primary" />
+                <Spinner animation="border" style={{ color: "#4a6cf7" }} />
+                <p style={{ marginTop: "1rem", color: "#64748b", fontWeight: 600 }}>
+                  Loading nurses...
+                </p>
               </div>
             ) : error ? (
-              <Alert variant="danger">{error}</Alert>
+              <Alert variant="danger" style={{ margin: "2rem", borderRadius: "12px" }}>{error}</Alert>
             ) : (
               <>
                 <div
                   style={{
                     width: "100%",
                     overflowX: "auto",
-                    borderRadius: "20px",
                   }}
                 >
                   <Table
@@ -315,25 +362,21 @@ const NursesPage = () => {
                     <thead>
                       <tr
                         style={{
-                          background:
-                            "linear-gradient(90deg, #263a99 60%, #4a6cf7 100%)",
+                          background: "linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%)",
                           color: "#fff",
                           fontWeight: 700,
-                          fontSize: "1.05rem",
-                          letterSpacing: "0.5px",
-                          border: "none",
+                          fontSize: "0.95rem",
+                          letterSpacing: "0.3px",
+                          textTransform: "uppercase",
                         }}
                       >
-                        <th style={{ border: "none", borderTopLeftRadius: 16, padding: "1.1rem 1.2rem" }}>#</th>
-                        <th style={{ border: "none", padding: "1.1rem 1.2rem" }}>Nurse Name</th>
-                        <th style={{ border: "none", padding: "1.1rem 1.2rem" }}>Email</th>
-                        <th style={{ border: "none", padding: "1.1rem 1.2rem" }}>Mobile</th>
-                        <th style={{ border: "none", padding: "1.1rem 1.2rem" }}>Gender</th>
-                        <th style={{ border: "none", padding: "1.1rem 1.2rem" }}>Birthday</th>
-                        <th style={{ border: "none", padding: "1.1rem 1.2rem" }}>License #</th>
-                        <th style={{ border: "none", padding: "1.1rem 1.2rem" }}>Shift</th>
-                        <th style={{ border: "none", padding: "1.1rem 1.2rem" }}>Employee ID</th>
-                        <th style={{ border: "none", borderTopRightRadius: 16, padding: "1.1rem 1.2rem" }}>Actions</th>
+                        <th style={{ border: "none", padding: "1.25rem 1.5rem", fontFamily: "'Inter Tight', sans-serif" }}>#</th>
+                        <th style={{ border: "none", padding: "1.25rem 1.5rem", fontFamily: "'Inter Tight', sans-serif" }}>Nurse Name</th>
+                        <th style={{ border: "none", padding: "1.25rem 1.5rem", fontFamily: "'Inter Tight', sans-serif" }}>Contact Info</th>
+                        <th style={{ border: "none", padding: "1.25rem 1.5rem", fontFamily: "'Inter Tight', sans-serif" }}>Personal</th>
+                        <th style={{ border: "none", padding: "1.25rem 1.5rem", fontFamily: "'Inter Tight', sans-serif" }}>Professional</th>
+                        <th style={{ border: "none", padding: "1.25rem 1.5rem", fontFamily: "'Inter Tight', sans-serif" }}>Schedule</th>
+                        <th style={{ border: "none", padding: "1.25rem 1.5rem", fontFamily: "'Inter Tight', sans-serif" }}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -341,87 +384,183 @@ const NursesPage = () => {
                         <tr
                           key={nurse._id}
                           style={{
-                            background: index % 2 === 0 ? "#f7faff" : "#fff",
-                            borderRadius: 14,
-                            boxShadow: "0 2px 8px rgba(42,63,157,0.03)",
-                            transition: "background 0.2s",
+                            background: index % 2 === 0 ? "#f8fafc" : "#ffffff",
+                            transition: "all 0.2s ease",
                             verticalAlign: "middle",
+                            cursor: "pointer",
+                            borderLeft: "4px solid transparent",
+                          }}
+                          onClick={() => handleViewNurse(nurse)}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "#f0f4ff";
+                            e.currentTarget.style.borderLeft = "4px solid #4a6cf7";
+                            e.currentTarget.style.transform = "scale(1.005)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = index % 2 === 0 ? "#f8fafc" : "#ffffff";
+                            e.currentTarget.style.borderLeft = "4px solid transparent";
+                            e.currentTarget.style.transform = "scale(1)";
                           }}
                         >
-                          <td style={{ padding: "1.1rem 1.2rem", fontWeight: 600, color: "#4a6cf7", fontSize: "1.05rem", border: "none" }}>
+                          <td style={{ padding: "1.25rem 1.5rem", fontWeight: 700, color: "#4a6cf7", fontSize: "1rem", border: "none", fontFamily: "'Inter Tight', sans-serif" }}>
                             {indexOfFirstNurse + index + 1}
                           </td>
-                          <td 
-                            style={{ padding: "1.1rem 1.2rem", border: "none", cursor: "pointer" }}
-                            onClick={() => handleViewNurse(nurse)}
-                          >
-                            <div style={{ fontWeight: 700, color: "#263a99", fontSize: "1.08rem" }}>
-                              {`${nurse.firstName} ${nurse.middleName || ""} ${nurse.lastName}`}
+                          <td style={{ padding: "1.25rem 1.5rem", border: "none" }}>
+                            <div style={{ 
+                              display: "flex", 
+                              alignItems: "center", 
+                              gap: "1rem" 
+                            }}>
+                              <div
+                                style={{
+                                  width: "45px",
+                                  height: "45px",
+                                  borderRadius: "12px",
+                                  background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  color: "#fff",
+                                  fontWeight: 800,
+                                  fontSize: "1.1rem",
+                                  flexShrink: 0,
+                                  boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)",
+                                  fontFamily: "'Inter Tight', sans-serif",
+                                }}
+                              >
+                                {nurse.firstName?.charAt(0)}{nurse.lastName?.charAt(0)}
+                              </div>
+                              <div>
+                                <div style={{ fontWeight: 700, color: "#2a3f9d", fontSize: "1rem", fontFamily: "'Inter Tight', sans-serif" }}>
+                                  {`${nurse.firstName} ${nurse.middleName || ""} ${nurse.lastName}`}
+                                </div>
+                                <div style={{ 
+                                  color: "#64748b", 
+                                  fontSize: "0.8rem", 
+                                  marginTop: "0.25rem",
+                                  background: "#f1f5f9",
+                                  padding: "0.125rem 0.5rem",
+                                  borderRadius: "6px",
+                                  display: "inline-block",
+                                  fontWeight: 600,
+                                }}>
+                                  ID: {nurse.employeeId}
+                                </div>
+                              </div>
                             </div>
                           </td>
-                          <td style={{ padding: "1.1rem 1.2rem", border: "none" }}>
-                            <div style={{ color: "#374151", fontWeight: 500 }}>{nurse.email}</div>
-                          </td>
-                          <td style={{ padding: "1.1rem 1.2rem", border: "none" }}>
-                            <div style={{ color: "#374151" }}>{nurse.mobileNumber}</div>
-                          </td>
-                          <td style={{ padding: "1.1rem 1.2rem", border: "none" }}>
-                            <div style={{ color: "#263a99" }}>{nurse.gender}</div>
-                          </td>
-                          <td style={{ padding: "1.1rem 1.2rem", border: "none" }}>
-                            <div style={{ color: "#64748b" }}>
-                              {nurse.dateOfBirth
-                                ? new Date(nurse.dateOfBirth).toLocaleDateString("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                  })
-                                : ""}
+                          <td style={{ padding: "1.25rem 1.5rem", border: "none" }}>
+                            <div style={{ fontSize: "0.875rem", lineHeight: "1.6" }}>
+                              <div style={{ color: "#475569", fontWeight: 500 }}>{nurse.email}</div>
+                              <div style={{ color: "#64748b", marginTop: "0.25rem" }}>{nurse.mobileNumber}</div>
                             </div>
                           </td>
-                          <td style={{ padding: "1.1rem 1.2rem", border: "none" }}>
-                            <div style={{ color: "#4a6cf7" }}>{nurse.nurseLicenseNumber}</div>
+                          <td style={{ padding: "1.25rem 1.5rem", border: "none" }}>
+                            <div style={{ fontSize: "0.875rem", lineHeight: "1.6" }}>
+                              <div>
+                                <span style={{ fontWeight: 700, color: "#2a3f9d" }}>Gender:</span>{" "}
+                                <span style={{ color: "#64748b" }}>{nurse.gender}</span>
+                              </div>
+                              <div style={{ color: "#64748b", marginTop: "0.25rem", fontSize: "0.85rem" }}>
+                                {nurse.dateOfBirth
+                                  ? new Date(nurse.dateOfBirth).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    })
+                                  : "N/A"}
+                              </div>
+                            </div>
                           </td>
-                          <td style={{ padding: "1.1rem 1.2rem", border: "none" }}>
-                            <div style={{ color: "#263a99" }}>{nurse.shiftSchedule}</div>
+                          <td style={{ padding: "1.25rem 1.5rem", border: "none" }}>
+                            <div
+                              style={{
+                                background: "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)",
+                                padding: "0.5rem 0.75rem",
+                                borderRadius: "10px",
+                                border: "1px solid rgba(59, 130, 246, 0.2)",
+                                fontSize: "0.875rem",
+                              }}
+                            >
+                              <div style={{ fontWeight: 700, color: "#1e40af" }}>
+                                License: {nurse.nurseLicenseNumber}
+                              </div>
+                            </div>
                           </td>
-                          <td style={{ padding: "1.1rem 1.2rem", border: "none" }}>
-                            <div style={{ color: "#263a99" }}>{nurse.employeeId}</div>
+                          <td style={{ padding: "1.25rem 1.5rem", border: "none" }}>
+                            <div
+                              style={{
+                                background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
+                                padding: "0.5rem 0.75rem",
+                                borderRadius: "10px",
+                                border: "1px solid rgba(245, 158, 11, 0.2)",
+                                fontSize: "0.875rem",
+                                fontWeight: 700,
+                                color: "#92400e",
+                                textAlign: "center",
+                              }}
+                            >
+                              {nurse.shiftSchedule}
+                            </div>
                           </td>
-                          <td style={{ padding: "1.1rem 1.2rem", border: "none" }}>
+                          <td style={{ padding: "1.25rem 1.5rem", border: "none" }} onClick={(e) => e.stopPropagation()}>
                             <Dropdown>
                               <Dropdown.Toggle
                                 variant="outline-secondary"
                                 size="sm"
                                 style={{
-                                  border: "none",
-                                  background: "transparent",
-                                  color: "#64748b"
+                                  border: "2px solid #e2e8f0",
+                                  background: "#fff",
+                                  color: "#64748b",
+                                  borderRadius: "8px",
+                                  fontWeight: 700,
+                                  fontSize: "1.2rem",
+                                  padding: "0.25rem 0.75rem",
+                                  lineHeight: 1,
                                 }}
                               >
                                 ⋮
                               </Dropdown.Toggle>
-                              <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => handleViewNurse(nurse)}>
-                                  <i className="bi bi-eye"></i> View Details
+                              <Dropdown.Menu style={{ borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", border: "1px solid #e2e8f0" }}>
+                                <Dropdown.Item 
+                                  onClick={() => handleViewNurse(nurse)}
+                                  style={{ padding: "0.75rem 1rem", fontWeight: 600 }}
+                                >
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#4a6cf7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <circle cx="12" cy="12" r="3" stroke="#4a6cf7" strokeWidth="2"/>
+                                  </svg>
+                                  View Details
                                 </Dropdown.Item>
-                                <Dropdown.Item onClick={() => exportSingleNursePDF(nurse)}>
-                                  <i className="bi bi-file-earmark-pdf"></i> Export PDF
+                                <Dropdown.Item 
+                                  onClick={() => exportSingleNursePDF(nurse)}
+                                  style={{ padding: "0.75rem 1rem", fontWeight: 600 }}
+                                >
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  </svg>
+                                  Export PDF
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
                                 {showArchived ? (
                                   <Dropdown.Item 
                                     onClick={() => handleRestoreNurse(nurse._id)}
-                                    style={{ color: "#28a745" }}
+                                    style={{ color: "#10b981", padding: "0.75rem 1rem", fontWeight: 600 }}
                                   >
-                                    <i className="bi bi-arrow-clockwise"></i> Restore
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
+                                      <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                    Restore
                                   </Dropdown.Item>
                                 ) : (
                                   <Dropdown.Item 
                                     onClick={() => handleArchiveNurse(nurse._id)}
-                                    style={{ color: "#dc3545" }}
+                                    style={{ color: "#f59e0b", padding: "0.75rem 1rem", fontWeight: 600 }}
                                   >
-                                    <i className="bi bi-archive"></i> Archive
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
+                                      <path d="M21 8v13H3V8M1 3h22v5H1V3zm9 5v13m4-13v13" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                    Archive
                                   </Dropdown.Item>
                                 )}
                               </Dropdown.Menu>
@@ -432,15 +571,21 @@ const NursesPage = () => {
                       {currentNurses.length === 0 && (
                         <tr>
                           <td
-                            colSpan={10}
+                            colSpan={7}
                             style={{
                               textAlign: "center",
-                              padding: "2rem",
+                              padding: "3rem",
                               color: "#64748b",
                               fontSize: "1.1rem",
-                              background: "#f9fafb",
+                              background: "#f8fafc",
                             }}
                           >
+                            <div style={{ marginBottom: "1rem" }}>
+                              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ opacity: 0.3 }}>
+                                <circle cx="12" cy="12" r="10" stroke="#94a3b8" strokeWidth="2"/>
+                                <path d="M12 8v4M12 16h.01" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round"/>
+                              </svg>
+                            </div>
                             {showArchived ? 'No archived nurses found.' : 'No nurses found.'}
                           </td>
                         </tr>
@@ -448,25 +593,44 @@ const NursesPage = () => {
                     </tbody>
                   </Table>
                 </div>
-                <Pagination className="mt-4 justify-content-center">
-                  <Pagination.Prev
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  />
-                  {[...Array(totalPages)].map((_, index) => (
-                    <Pagination.Item
-                      key={index + 1}
-                      active={currentPage === index + 1}
-                      onClick={() => setCurrentPage(index + 1)}
-                    >
-                      {index + 1}
-                    </Pagination.Item>
-                  ))}
-                  <Pagination.Next
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  />
-                </Pagination>
+                {totalPages > 1 && (
+                  <div style={{ padding: "1.5rem", background: "#f8fafc", borderTop: "1px solid #e2e8f0" }}>
+                    <Pagination className="mb-0 justify-content-center">
+                      <Pagination.Prev
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        style={{
+                          borderRadius: "8px",
+                          fontWeight: 600,
+                          color: currentPage === 1 ? "#cbd5e1" : "#4a6cf7",
+                        }}
+                      />
+                      {[...Array(totalPages)].map((_, index) => (
+                        <Pagination.Item
+                          key={index + 1}
+                          active={currentPage === index + 1}
+                          onClick={() => setCurrentPage(index + 1)}
+                          style={{
+                            borderRadius: "8px",
+                            fontWeight: 600,
+                            margin: "0 0.25rem",
+                          }}
+                        >
+                          {index + 1}
+                        </Pagination.Item>
+                      ))}
+                      <Pagination.Next
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        style={{
+                          borderRadius: "8px",
+                          fontWeight: 600,
+                          color: currentPage === totalPages ? "#cbd5e1" : "#4a6cf7",
+                        }}
+                      />
+                    </Pagination>
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -476,120 +640,232 @@ const NursesPage = () => {
         <Modal
           show={showViewModal}
           onHide={() => setShowViewModal(false)}
-          size="md"
+          size="lg"
           centered
+          dialogClassName="custom-modal-dialog"
         >
           <Modal.Header
             closeButton
             style={{
-              background: "linear-gradient(90deg, #263a99 60%, #4a6cf7 100%)",
+              background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
               color: "#fff",
-              borderTopLeftRadius: "1rem",
-              borderTopRightRadius: "1rem",
               borderBottom: "none",
-              boxShadow: "0 2px 8px rgba(42,63,157,0.07)",
+              padding: "1.5rem 2rem",
             }}
           >
-            <Modal.Title style={{ fontWeight: 700, fontSize: "1.4rem", color: "#fff" }}>
+            <Modal.Title style={{ fontWeight: 800, fontSize: "1.5rem", color: "#fff", fontFamily: "'Inter Tight', sans-serif" }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: "0.75rem", verticalAlign: "middle" }}>
+                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2M12 11a4 4 0 100-8 4 4 0 000 8z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M17 11l2 2 4-4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
               Nurse Details
             </Modal.Title>
           </Modal.Header>
           <Modal.Body
             style={{
-              background: "#f7faff",
-              borderBottomLeftRadius: "1rem",
-              borderBottomRightRadius: "1rem",
-              padding: "2rem 2.5rem",
-              boxShadow: "0 2px 8px rgba(42,63,157,0.04)",
+              background: "#f8fafc",
+              padding: "2rem",
             }}
           >
             {viewNurse && (
-              <div style={{ fontSize: "1.08rem", color: "#263a99" }}>
-                <Row>
-                  <Col md={6} className="mb-3">
-                    <strong>Name</strong>
-                    <div style={{ fontWeight: 600, fontSize: "1.15rem" }}>
-                      {viewNurse.firstName} {viewNurse.middleName} {viewNurse.lastName}
-                    </div>
-                  </Col>
-                  <Col md={6} className="mb-3">
-                    <strong>Email</strong>
-                    <div>{viewNurse.email}</div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md={6} className="mb-3">
-                    <strong>Mobile</strong>
-                    <div>{viewNurse.mobileNumber}</div>
-                  </Col>
-                  <Col md={6} className="mb-3">
-                    <strong>Gender</strong>
-                    <div>{viewNurse.gender}</div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md={6} className="mb-3">
-                    <strong>Date of Birth</strong>
-                    <div>
-                      {viewNurse.dateOfBirth
-                        ? new Date(viewNurse.dateOfBirth).toLocaleDateString("en-US", {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                          })
-                        : ""}
-                    </div>
-                  </Col>
-                  <Col md={6} className="mb-3">
-                    <strong>License #</strong>
-                    <div>{viewNurse.nurseLicenseNumber}</div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col md={6} className="mb-3">
-                    <strong>Shift</strong>
-                    <div>{viewNurse.shiftSchedule}</div>
-                  </Col>
-                  <Col md={6} className="mb-3">
-                    <strong>Employee ID</strong>
-                    <div>{viewNurse.employeeId}</div>
-                  </Col>
-                </Row>
-                {viewNurse.archived && (
-                  <Row>
-                    <Col md={12} className="mb-3">
-                      <div style={{ 
-                        background: "#fff3cd", 
-                        padding: "0.75rem", 
-                        borderRadius: "0.375rem",
-                        border: "1px solid #ffeaa7"
-                      }}>
-                        <strong style={{ color: "#856404" }}>Status:</strong>
-                        <span style={{ color: "#856404", marginLeft: "0.5rem" }}>Archived</span>
+              <div style={{ fontSize: "0.95rem", color: "#475569" }}>
+                {/* Nurse Avatar */}
+                <div style={{ 
+                  textAlign: "center", 
+                  marginBottom: "2rem",
+                  paddingBottom: "1.5rem",
+                  borderBottom: "2px solid #e2e8f0"
+                }}>
+                  <div
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      borderRadius: "20px",
+                      background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#fff",
+                      fontWeight: 800,
+                      fontSize: "2rem",
+                      marginBottom: "1rem",
+                      boxShadow: "0 8px 24px rgba(16, 185, 129, 0.3)",
+                      fontFamily: "'Inter Tight', sans-serif",
+                    }}
+                  >
+                    {viewNurse.firstName?.charAt(0)}{viewNurse.lastName?.charAt(0)}
+                  </div>
+                  <h4 style={{ 
+                    fontWeight: 800, 
+                    color: "#2a3f9d", 
+                    marginBottom: "0.5rem",
+                    fontFamily: "'Inter Tight', sans-serif",
+                    fontSize: "1.5rem"
+                  }}>
+                    {viewNurse.firstName} {viewNurse.middleName} {viewNurse.lastName}
+                  </h4>
+                  <div style={{
+                    display: "inline-block",
+                    background: "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)",
+                    padding: "0.375rem 1rem",
+                    borderRadius: "8px",
+                    fontWeight: 700,
+                    color: "#1e40af",
+                    fontSize: "0.95rem",
+                    border: "1px solid rgba(59, 130, 246, 0.2)",
+                  }}>
+                    License: {viewNurse.nurseLicenseNumber}
+                  </div>
+                </div>
+
+                {/* Info Grid */}
+                <Row className="g-4">
+                  <Col md={6}>
+                    <div style={{ 
+                      background: "#fff", 
+                      padding: "1rem 1.25rem", 
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0"
+                    }}>
+                      <strong style={{ color: "#64748b", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Employee ID</strong>
+                      <div style={{ color: "#2a3f9d", fontWeight: 600, marginTop: "0.25rem" }}>
+                        {viewNurse.employeeId}
                       </div>
-                    </Col>
-                  </Row>
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div style={{ 
+                      background: "#fff", 
+                      padding: "1rem 1.25rem", 
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0"
+                    }}>
+                      <strong style={{ color: "#64748b", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Shift Schedule</strong>
+                      <div style={{ 
+                        color: "#92400e", 
+                        fontWeight: 700, 
+                        marginTop: "0.25rem",
+                        background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
+                        padding: "0.25rem 0.75rem",
+                        borderRadius: "6px",
+                        display: "inline-block",
+                        border: "1px solid rgba(245, 158, 11, 0.2)",
+                      }}>
+                        {viewNurse.shiftSchedule}
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div style={{ 
+                      background: "#fff", 
+                      padding: "1rem 1.25rem", 
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0"
+                    }}>
+                      <strong style={{ color: "#64748b", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Email</strong>
+                      <div style={{ color: "#2a3f9d", fontWeight: 600, marginTop: "0.25rem", wordBreak: "break-word" }}>
+                        {viewNurse.email}
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div style={{ 
+                      background: "#fff", 
+                      padding: "1rem 1.25rem", 
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0"
+                    }}>
+                      <strong style={{ color: "#64748b", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Mobile</strong>
+                      <div style={{ color: "#2a3f9d", fontWeight: 600, marginTop: "0.25rem" }}>
+                        {viewNurse.mobileNumber}
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div style={{ 
+                      background: "#fff", 
+                      padding: "1rem 1.25rem", 
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0"
+                    }}>
+                      <strong style={{ color: "#64748b", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Gender</strong>
+                      <div style={{ color: "#2a3f9d", fontWeight: 600, marginTop: "0.25rem" }}>
+                        {viewNurse.gender}
+                      </div>
+                    </div>
+                  </Col>
+                  <Col md={6}>
+                    <div style={{ 
+                      background: "#fff", 
+                      padding: "1rem 1.25rem", 
+                      borderRadius: "12px",
+                      border: "1px solid #e2e8f0"
+                    }}>
+                      <strong style={{ color: "#64748b", fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>Date of Birth</strong>
+                      <div style={{ color: "#2a3f9d", fontWeight: 600, marginTop: "0.25rem" }}>
+                        {viewNurse.dateOfBirth
+                          ? new Date(viewNurse.dateOfBirth).toLocaleDateString("en-US", {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })
+                          : "N/A"}
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
+
+                {viewNurse.archived && (
+                  <div style={{ 
+                    marginTop: "1.5rem",
+                    background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)", 
+                    padding: "1rem 1.25rem", 
+                    borderRadius: "12px",
+                    border: "1px solid rgba(245, 158, 11, 0.3)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.75rem"
+                  }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="#92400e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <div>
+                      <strong style={{ color: "#92400e", fontSize: "0.9rem" }}>Status:</strong>
+                      <span style={{ color: "#92400e", marginLeft: "0.5rem", fontWeight: 700 }}>Archived</span>
+                    </div>
+                  </div>
                 )}
-                {/* Export button at the bottom right */}
-                <div className="d-flex justify-content-end mt-4">
+
+                <div className="d-flex justify-content-end mt-4" style={{ gap: "0.75rem", paddingTop: "1.5rem", borderTop: "2px solid #e2e8f0" }}>
                   <Button
                     style={{
-                      borderRadius: 8,
-                      fontWeight: 600,
-                      background: "#22c55e",
+                      borderRadius: "10px",
+                      fontWeight: 700,
+                      fontSize: "0.9rem",
+                      background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                       border: "none",
                       color: "#fff",
-                      boxShadow: "0 1px 4px rgba(34,197,94,0.10)",
-                      transition: "background 0.2s",
-                      padding: "6px 18px",
-                      fontSize: "1rem",
+                      boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)",
+                      transition: "all 0.2s ease",
+                      padding: "0.75rem 1.25rem",
                       display: "flex",
                       alignItems: "center",
-                      gap: 6,
+                      gap: "0.5rem",
                     }}
                     onClick={() => exportSingleNursePDF(viewNurse)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 6px 16px rgba(16, 185, 129, 0.3)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 185, 129, 0.2)";
+                    }}
                   >
-                    <i className="bi bi-file-earmark-pdf"></i> Export PDF
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Export PDF
                   </Button>
                 </div>
               </div>
