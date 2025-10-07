@@ -11,7 +11,7 @@ console.log('🌐 API Base URL:', baseURL);
 
 const api = axios.create({
   baseURL: baseURL,
-  timeout: 10000, // 10 second timeout
+  timeout: 60000, // 60 second timeout (Render free tier can take time to wake up)
 });
 
 // Add request interceptor for authentication and debugging
