@@ -1255,6 +1255,100 @@ app.post('/api/admin/reset-password', async (req, res) => {
   res.json({ message: 'Password reset successful' });
 });
 
+// --- NURSE FORGOT PASSWORD ENDPOINTS ---
+
+// Nurse: Request OTP for password reset
+app.post('/api/nurses/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  const nurse = await Nurse.findOne({ email });
+  if (!nurse) return res.status(400).json({ message: 'Nurse not found' });
+
+  const otp = generateOTP();
+  otpStore[email] = { otp, expiresAt: Date.now() + 15 * 60 * 1000 };
+
+  try {
+    await transporter.sendMail({
+      from: `"DialyEase Support" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Your OTP Code - DialyEase Nurse Portal',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img src="https://drive.google.com/uc?export=view&id=12NssR4VbFJLHRQ_-_9aSLS_LVdEqW-P8" alt="DialyEase Logo" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #263A99; margin-bottom: 15px;">
+            <h1 style="color: #263A99; margin: 0;">DialyEase Nurse Portal</h1>
+          </div>
+          
+          <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
+            <p style="color: #666; font-size: 16px;">Hello ${nurse.firstName || 'Nurse'},</p>
+            <p style="color: #666; font-size: 16px;">We received a request to reset your password. Use the OTP code below:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <div style="background-color: #263A99; color: white; font-size: 32px; font-weight: bold; padding: 20px; border-radius: 8px; letter-spacing: 3px;">
+                ${otp}
+              </div>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; text-align: center;">This code expires in 15 minutes.</p>
+            <p style="color: #666; font-size: 14px; text-align: center;">If you didn't request this, please ignore this email.</p>
+          </div>
+          
+          <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+            <p>© 2024 DialyEase. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+    });
+
+    res.json({ message: 'OTP sent to email' });
+  } catch (err) {
+    console.error('Nurse OTP email sending failed:', err);
+    res.status(500).json({ message: 'Failed to send email' });
+  }
+});
+
+// Nurse: Verify OTP
+app.post('/api/nurses/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+  const record = otpStore[email];
+
+  if (!record) return res.status(400).json({ message: 'OTP not found or expired' });
+
+  if (record.expiresAt < Date.now()) {
+    delete otpStore[email];
+    return res.status(400).json({ message: 'OTP expired' });
+  }
+
+  if (record.otp !== otp) {
+    return res.status(400).json({ message: 'Invalid OTP' });
+  }
+
+  delete otpStore[email];
+  res.json({ message: 'OTP verified' });
+});
+
+// Nurse: Reset password
+app.post('/api/nurses/reset-password', async (req, res) => {
+  const { email, new_password } = req.body;
+  if (!email || !new_password) {
+    return res.status(400).json({ message: 'Email and new password are required' });
+  }
+  try {
+    const nurse = await Nurse.findOne({ email });
+    if (!nurse) {
+      return res.status(404).json({ message: 'Nurse not found' });
+    }
+    const hashed = await bcrypt.hash(new_password, 10);
+    nurse.password = hashed;
+    await nurse.save();
+    res.json({ message: 'Password reset successful' });
+  } catch (err) {
+    console.error('Nurse reset password error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
 // Firestore listener (only if Firebase is initialized)
 if (firebaseInitialized) {
   admin.firestore().collection('vitals')
