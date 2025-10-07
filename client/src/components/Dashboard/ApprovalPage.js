@@ -34,8 +34,21 @@ const ApprovalPage = () => {
       console.log('Patients response:', patientsRes.data); // Debug log
       console.log('Nurses response:', nursesRes.data); // Debug log
       
-      setPendingPatients(patientsRes.data || []);
-      setPendingNurses(nursesRes.data || []);
+      // Handle both response formats and filter for unapproved only
+      const patients = patientsRes.data.data || patientsRes.data || [];
+      const nurses = nursesRes.data || [];
+      
+      console.log('Total patients:', patients.length);
+      console.log('Total nurses:', nurses.length);
+      
+      const unapprovedPatients = patients.filter(p => !p.approved);
+      const unapprovedNurses = nurses.filter(n => !n.approved);
+      
+      console.log('Unapproved patients:', unapprovedPatients.length);
+      console.log('Unapproved nurses:', unapprovedNurses.length);
+      
+      setPendingPatients(unapprovedPatients);
+      setPendingNurses(unapprovedNurses);
     } catch (err) {
       console.error('Error fetching pending approvals:', err); // Debug log
       
