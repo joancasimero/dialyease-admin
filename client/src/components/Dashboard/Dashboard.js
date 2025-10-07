@@ -118,14 +118,13 @@ const Dashboard = () => {
     setAttendanceLoading(true);
     try {
       const todayStr = getPhilippineDateStr();
-      // FIXED: Comment out non-existent endpoint
-      // const res = await api.get('/attendance', {
-      //   headers: getAuthHeader(),
-      //   params: { date: todayStr }
-      // });
-      const res = { data: [] };
+      const res = await api.get('/attendance', {
+        headers: getAuthHeader(),
+        params: { date: todayStr }
+      });
       setAttendanceRecords(res.data);
     } catch (err) {
+      console.error('Error fetching attendance:', err);
       setAttendanceRecords([]);
     }
     setAttendanceLoading(false);
