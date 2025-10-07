@@ -8,7 +8,7 @@ const createTransporter = () => {
     secure: true, // Use SSL
     auth: {
       user: process.env.EMAIL_USER, // Your email
-      pass: process.env.EMAIL_PASSWORD // Your app password
+      pass: process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS // Your app password (support both names)
     },
     tls: {
       rejectUnauthorized: false
@@ -20,8 +20,9 @@ const createTransporter = () => {
 const sendOTPEmail = async (to, otp) => {
   try {
     // Validate email configuration
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-      throw new Error('Email configuration missing. Please set EMAIL_USER and EMAIL_PASSWORD environment variables.');
+    const emailPassword = process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS;
+    if (!process.env.EMAIL_USER || !emailPassword) {
+      throw new Error('Email configuration missing. Please set EMAIL_USER and EMAIL_PASSWORD (or EMAIL_PASS) environment variables.');
     }
 
     console.log('📧 Attempting to send email to:', to);

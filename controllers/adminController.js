@@ -264,9 +264,10 @@ const requestPasswordReset = async (req, res) => {
       });
     } catch (emailError) {
       console.error('❌ Email sending failed:', emailError.message);
+      const emailPassword = process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS;
       console.error('❌ Email config check:', {
         hasEmailUser: !!process.env.EMAIL_USER,
-        hasEmailPassword: !!process.env.EMAIL_PASSWORD,
+        hasEmailPassword: !!emailPassword,
         emailUserValue: process.env.EMAIL_USER ? 'Set' : 'Not set'
       });
       
@@ -277,7 +278,7 @@ const requestPasswordReset = async (req, res) => {
       return res.json({ 
         message: 'Email service temporarily unavailable. Your OTP has been logged to the server console.',
         otp: otp, // Include OTP in response as fallback
-        emailConfigured: !!process.env.EMAIL_USER && !!process.env.EMAIL_PASSWORD
+        emailConfigured: !!process.env.EMAIL_USER && !!(process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS)
       });
     }
   } catch (err) {
