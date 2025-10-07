@@ -1214,44 +1214,219 @@ const AppointmentSlotTracker = ({ authToken }) => {
       </Modal>
 
       {/* Slot Details Modal */}
-      <Modal show={showSlotModal} onHide={() => setShowSlotModal(false)} size="md">
-        <Modal.Header closeButton>
-          <Modal.Title>
-            Slot #{activeSlot?.slotNumber} - {activeSlot?.machine?.name || 'Machine N/A'}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div style={{ fontSize: '1.05rem', color: '#263a99', fontWeight: 500 }}>
-            <div><strong>Status:</strong> <Badge bg={getSlotStatusColor(activeSlot || {})}>{getSlotStatusText(activeSlot || {})}</Badge></div>
-            <div><strong>Booked At:</strong> {activeSlot?.bookedAt ? new Date(activeSlot.bookedAt).toLocaleString() : '-'}</div>
-            <div><strong>Patient:</strong> {activeSlot?.patient ? `${activeSlot.patient.firstName} ${activeSlot.patient.lastName} (${activeSlot.patient.pidNumber || 'No PID'})` : '-'}</div>
-            <div><strong>Time Period:</strong> {slotData && slotData.morning && slotData.morning.includes(activeSlot) ? 'Morning' : (slotData && slotData.afternoon && slotData.afternoon.includes(activeSlot) ? 'Afternoon' : '-')}</div>
-          </div>
-          <div className="mt-3" style={{ display: 'flex', gap: '0.5rem' }}>
-            <Button
-              variant={activeSlot?.isDisabled ? 'success' : 'secondary'}
-              size="sm"
-              disabled={toggleLoading === activeSlot?._id}
-              onClick={() => handleToggleDisable(activeSlot)}
-              style={{ borderRadius: '6px' }}
-            >
-              {toggleLoading === activeSlot?._id
-                ? (activeSlot?.isDisabled ? 'Enabling...' : 'Disabling...')
-                : (activeSlot?.isDisabled ? 'Enable' : 'Disable')}
-            </Button>
-            {activeSlot?.isBooked && activeSlot?.patient ? (
+      <Modal show={showSlotModal} onHide={() => setShowSlotModal(false)} centered>
+        <div style={{
+          borderRadius: '20px',
+          overflow: 'hidden',
+          border: 'none',
+          fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+        }}>
+          <Modal.Header 
+            closeButton
+            style={{
+              background: 'linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%)',
+              border: 'none',
+              padding: '1.75rem 2rem',
+              color: 'white'
+            }}
+          >
+            <Modal.Title style={{
+              fontSize: '1.4rem',
+              fontWeight: 800,
+              color: 'white',
+              letterSpacing: '-0.025em',
+              fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+            }}>
+              Slot #{activeSlot?.slotNumber} - {activeSlot?.machine?.name || 'Machine N/A'}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body style={{
+            padding: '2rem',
+            background: 'white'
+          }}>
+            <div style={{
+              display: 'grid',
+              gap: '1.25rem',
+              fontSize: '0.95rem',
+              fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+            }}>
+              {/* Status */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1rem 1.25rem',
+                background: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%)',
+                borderRadius: '12px',
+                border: '1px solid rgba(42, 63, 157, 0.1)'
+              }}>
+                <span style={{
+                  fontWeight: 700,
+                  color: '#1e293b',
+                  fontSize: '0.9rem',
+                  letterSpacing: '0.025em',
+                  textTransform: 'uppercase'
+                }}>Status:</span>
+                <Badge 
+                  bg={getSlotStatusColor(activeSlot || {})}
+                  style={{
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    padding: '0.5rem 1rem',
+                    borderRadius: '8px',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+                  }}
+                >
+                  {getSlotStatusText(activeSlot || {})}
+                </Badge>
+              </div>
+
+              {/* Time Period */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '1rem 1.25rem',
+                background: 'white',
+                borderRadius: '12px',
+                border: '2px solid rgba(42, 63, 157, 0.1)'
+              }}>
+                <span style={{
+                  fontWeight: 700,
+                  color: '#1e293b',
+                  fontSize: '0.9rem',
+                  letterSpacing: '0.025em',
+                  textTransform: 'uppercase'
+                }}>Time Period:</span>
+                <span style={{
+                  fontWeight: 600,
+                  color: '#2a3f9d',
+                  fontSize: '0.95rem'
+                }}>
+                  {slotData && slotData.morning && slotData.morning.includes(activeSlot) ? 'Morning' : (slotData && slotData.afternoon && slotData.afternoon.includes(activeSlot) ? 'Afternoon' : '-')}
+                </span>
+              </div>
+
+              {/* Patient Info */}
+              {activeSlot?.patient && (
+                <div style={{
+                  padding: '1.25rem',
+                  background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(245, 158, 11, 0.2)'
+                }}>
+                  <div style={{
+                    fontWeight: 700,
+                    color: '#92400e',
+                    fontSize: '0.85rem',
+                    letterSpacing: '0.05em',
+                    textTransform: 'uppercase',
+                    marginBottom: '0.75rem'
+                  }}>Patient Information</div>
+                  <div style={{
+                    fontWeight: 700,
+                    color: '#1e293b',
+                    fontSize: '1.1rem',
+                    marginBottom: '0.25rem'
+                  }}>
+                    {activeSlot.patient.firstName} {activeSlot.patient.lastName}
+                  </div>
+                  <div style={{
+                    fontWeight: 500,
+                    color: '#64748b',
+                    fontSize: '0.85rem'
+                  }}>
+                    PID: {activeSlot.patient.pidNumber || 'Not Set'}
+                  </div>
+                </div>
+              )}
+
+              {/* Booked At */}
+              {activeSlot?.bookedAt && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '1rem 1.25rem',
+                  background: 'white',
+                  borderRadius: '12px',
+                  border: '2px solid rgba(42, 63, 157, 0.1)'
+                }}>
+                  <span style={{
+                    fontWeight: 700,
+                    color: '#1e293b',
+                    fontSize: '0.9rem',
+                    letterSpacing: '0.025em',
+                    textTransform: 'uppercase'
+                  }}>Booked At:</span>
+                  <span style={{
+                    fontWeight: 600,
+                    color: '#64748b',
+                    fontSize: '0.9rem'
+                  }}>
+                    {new Date(activeSlot.bookedAt).toLocaleString()}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{
+              marginTop: '2rem',
+              display: 'flex',
+              gap: '0.75rem',
+              paddingTop: '1.5rem',
+              borderTop: '2px solid rgba(42, 63, 157, 0.1)'
+            }}>
               <Button
-                variant="danger"
-                size="sm"
-                disabled={cancelLoading || activeSlot?.isDisabled}
-                onClick={() => handleCancelBooking(activeSlot)}
-                style={{ borderRadius: '6px' }}
+                variant={activeSlot?.isDisabled ? 'success' : 'secondary'}
+                size="lg"
+                disabled={toggleLoading === activeSlot?._id}
+                onClick={() => handleToggleDisable(activeSlot)}
+                style={{
+                  flex: 1,
+                  borderRadius: '12px',
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  padding: '0.75rem 1.5rem',
+                  border: 'none',
+                  background: activeSlot?.isDisabled 
+                    ? 'linear-gradient(135deg, #059669 0%, #047857 100%)'
+                    : 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                  fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                  transition: 'all 0.2s ease'
+                }}
               >
-                {cancelLoading ? 'Cancelling...' : 'Cancel Booking'}
+                {toggleLoading === activeSlot?._id
+                  ? (activeSlot?.isDisabled ? 'Enabling...' : 'Disabling...')
+                  : (activeSlot?.isDisabled ? '✓ Enable Slot' : '⊗ Disable Slot')}
               </Button>
-            ) : null}
-          </div>
-        </Modal.Body>
+              {activeSlot?.isBooked && activeSlot?.patient && (
+                <Button
+                  variant="danger"
+                  size="lg"
+                  disabled={cancelLoading || activeSlot?.isDisabled}
+                  onClick={() => handleCancelBooking(activeSlot)}
+                  style={{
+                    flex: 1,
+                    borderRadius: '12px',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    padding: '0.75rem 1.5rem',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
+                    boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
+                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {cancelLoading ? 'Cancelling...' : '✗ Cancel Booking'}
+                </Button>
+              )}
+            </div>
+          </Modal.Body>
+        </div>
       </Modal>
     </div>
   );
