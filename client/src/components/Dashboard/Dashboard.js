@@ -56,31 +56,29 @@ const Dashboard = () => {
   };
 
   const fetchTodayAppointments = useCallback(async () => {
-  try {
-    console.log('Fetching today\'s appointments...'); // Debug log
-    
-    // FIXED: Comment out non-existent endpoint
-    // const response = await api.get('/patients/today-appointments', {
-    //   headers: getAuthHeader()
-    // });
-    const response = { data: { success: true, appointments: [] } };
+    try {
+      console.log('Fetching today\'s appointments...'); // Debug log
+      
+      const response = await api.get('/patients/today-appointments', {
+        headers: getAuthHeader()
+      });
 
-    console.log('Response:', response.data); // Debug log
+      console.log('Response:', response.data); // Debug log
 
-    if (response.data.success) {
-      setTodayAppointments(response.data.appointments);
-      console.log('Today\'s appointments loaded:', response.data.appointments.length);
-    } else {
+      if (response.data.success) {
+        setTodayAppointments(response.data.appointments);
+        console.log('Today\'s appointments loaded:', response.data.appointments.length);
+      } else {
+        setTodayAppointments([]);
+        console.log('No appointments found for today');
+      }
+    } catch (err) {
+      console.error('Error fetching appointments:', err);
+      console.error('Error details:', err.response?.data); // More detailed error logging
+      setError("Failed to load today's appointments");
       setTodayAppointments([]);
-      console.log('No appointments found for today');
     }
-  } catch (err) {
-    console.error('Error fetching appointments:', err);
-    console.error('Error details:', err.response?.data); // More detailed error logging
-    setError("Failed to load today's appointments");
-    setTodayAppointments([]);
-  }
-}, []);
+  }, []);
 
   const fetchPatients = useCallback(async () => {
     try {
