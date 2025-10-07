@@ -255,24 +255,29 @@ const requestPasswordReset = async (req, res) => {
     
     // Send OTP via email
     try {
+      console.log(`🔐 Attempting to send OTP to ${email}`);
       await sendOTPEmail(email, otp);
-      console.log(`✅ OTP sent to ${email}`);
+      console.log(`✅ OTP sent successfully to ${email}`);
       
       res.json({ 
         message: 'OTP has been sent to your email. Please check your inbox.',
       });
     } catch (emailError) {
-      console.error('Email sending failed:', emailError);
-      // Fallback: show OTP in development mode if email fails
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`📧 DEV MODE - OTP for ${email}: ${otp}`);
-        return res.json({ 
-          message: 'Email service unavailable. OTP logged to console (dev mode).',
-          otp: otp
-        });
-      }
-      return res.status(500).json({ 
-        message: 'Failed to send OTP email. Please try again later or contact support.' 
+      console.error('❌ Email sending failed:', emailError.message);
+      console.error('❌ Email config check:', {
+        hasEmailUser: !!process.env.EMAIL_USER,
+        hasEmailPassword: !!process.env.EMAIL_PASSWORD,
+        emailUserValue: process.env.EMAIL_USER ? 'Set' : 'Not set'
+      });
+      
+      // Always log OTP to console as fallback
+      console.log(`📧 FALLBACK - OTP for ${email}: ${otp}`);
+      
+      // In development or if email fails, return OTP in response
+      return res.json({ 
+        message: 'Email service temporarily unavailable. Your OTP has been logged to the server console.',
+        otp: otp, // Include OTP in response as fallback
+        emailConfigured: !!process.env.EMAIL_USER && !!process.env.EMAIL_PASSWORD
       });
     }
   } catch (err) {

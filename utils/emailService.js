@@ -3,10 +3,15 @@ const nodemailer = require('nodemailer');
 // Create email transporter
 const createTransporter = () => {
   return nodemailer.createTransport({
-    service: 'gmail', // You can use other services like 'outlook', 'yahoo', etc.
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Use SSL
     auth: {
       user: process.env.EMAIL_USER, // Your email
       pass: process.env.EMAIL_PASSWORD // Your app password
+    },
+    tls: {
+      rejectUnauthorized: false
     }
   });
 };
@@ -14,6 +19,14 @@ const createTransporter = () => {
 // Send OTP email
 const sendOTPEmail = async (to, otp) => {
   try {
+    // Validate email configuration
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      throw new Error('Email configuration missing. Please set EMAIL_USER and EMAIL_PASSWORD environment variables.');
+    }
+
+    console.log('📧 Attempting to send email to:', to);
+    console.log('📧 Using email account:', process.env.EMAIL_USER);
+    
     const transporter = createTransporter();
     
     const mailOptions = {
@@ -124,11 +137,18 @@ const sendOTPEmail = async (to, otp) => {
       `
     };
     
+    console.log('📧 Sending email...');
     const info = await transporter.sendMail(mailOptions);
     console.log('✅ Email sent successfully:', info.messageId);
+    console.log('✅ Accepted recipients:', info.accepted);
     return { success: true, messageId: info.messageId };
   } catch (error) {
     console.error('❌ Error sending email:', error);
+    console.error('❌ Error details:', {
+      code: error.code,
+      command: error.command,
+      message: error.message
+    });
     throw error;
   }
 };

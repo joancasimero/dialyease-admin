@@ -21,8 +21,14 @@ const ForgotPassword = () => {
     setError('');
     setSuccess('');
     try {
-      await authService.requestAdminOtp(email);
-      setSuccess('OTP sent to your email.');
+      const response = await authService.requestAdminOtp(email);
+      setSuccess(response.message || 'OTP sent to your email.');
+      
+      // If OTP is in response (fallback mode), show it
+      if (response.otp) {
+        setSuccess(`${response.message}\n\n⚠️ Temporary: Your OTP is ${response.otp}`);
+      }
+      
       setStep(2);
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to send OTP. Please try again.');
