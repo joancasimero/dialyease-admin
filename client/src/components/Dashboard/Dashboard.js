@@ -1068,9 +1068,21 @@ function getPhilippineDateStr() {
                     position: 'absolute',
                     top: '1rem',
                     right: '1rem',
-                    fontSize: '1.5rem',
-                    color: 'rgba(42, 63, 157, 0.3)'
-                  }}>📅</div>
+                    width: '48px',
+                    height: '48px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, rgba(42, 63, 157, 0.08) 0%, rgba(74, 108, 247, 0.12) 100%)',
+                    borderRadius: '12px'
+                  }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="3" y="6" width="18" height="15" rx="2" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M3 10h18" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M8 3v4" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                      <path d="M16 3v4" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
+                  </div>
                   <div style={{
                     fontSize: '2.8rem',
                     fontWeight: 900,
@@ -1124,9 +1136,21 @@ function getPhilippineDateStr() {
                     position: 'absolute',
                     top: '1rem',
                     right: '1rem',
-                    fontSize: '1.5rem',
-                    color: 'rgba(42, 63, 157, 0.3)'
-                  }}>👥</div>
+                    width: '48px',
+                    height: '48px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, rgba(42, 63, 157, 0.08) 0%, rgba(74, 108, 247, 0.12) 100%)',
+                    borderRadius: '12px'
+                  }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <circle cx="12" cy="8" r="4" stroke="#2a3f9d" strokeWidth="2"/>
+                      <path d="M4 20c0-4 3.5-7 8-7s8 3 8 7" stroke="#2a3f9d" strokeWidth="2" strokeLinecap="round"/>
+                      <circle cx="18" cy="6" r="2.5" stroke="#2a3f9d" strokeWidth="1.5"/>
+                      <path d="M20 16c1.5-1.5 2.5-2.5 3-4" stroke="#2a3f9d" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </div>
                   <div style={{
                     fontSize: '2.8rem',
                     fontWeight: 900,
@@ -1180,9 +1204,23 @@ function getPhilippineDateStr() {
                     position: 'absolute',
                     top: '1rem',
                     right: '1rem',
-                    fontSize: '1.5rem',
-                    color: 'rgba(42, 63, 157, 0.3)'
-                  }}>⚕️</div>
+                    width: '48px',
+                    height: '48px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, rgba(42, 63, 157, 0.08) 0%, rgba(74, 108, 247, 0.12) 100%)',
+                    borderRadius: '12px'
+                  }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="4" y="8" width="16" height="12" rx="2" stroke="#2a3f9d" strokeWidth="2"/>
+                      <rect x="7" y="11" width="4" height="3" rx="0.5" fill="#2a3f9d"/>
+                      <rect x="13" y="11" width="4" height="3" rx="0.5" fill="#2a3f9d"/>
+                      <path d="M7 15h4M13 15h4" stroke="#2a3f9d" strokeWidth="1.5" strokeLinecap="round"/>
+                      <circle cx="12" cy="6" r="2" fill="#2a3f9d"/>
+                      <path d="M10 6h4" stroke="#fff" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </div>
                   <div style={{
                     fontSize: '2.8rem',
                     fontWeight: 900,
