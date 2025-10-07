@@ -8,6 +8,40 @@ const AppointmentSlot = require('../models/AppointmentSlot');
 const RescheduleRequest = require('../models/RescheduleRequest');
 const moment = require('moment-timezone');
 
+// Check if email already exists
+router.post('/check-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email is required' 
+      });
+    }
+
+    // Check if email exists in database (case-insensitive)
+    const existingPatient = await Patient.findOne({ 
+      email: { $regex: new RegExp(`^${email}$`, 'i') }
+    });
+
+    res.json({
+      success: true,
+      exists: existingPatient ? true : false,
+      message: existingPatient 
+        ? 'Email is already registered' 
+        : 'Email is available'
+    });
+  } catch (err) {
+    console.error('Email check error:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error checking email', 
+      error: err.message 
+    });
+  }
+});
+
 // Patient login route
 router.post('/login', async (req, res) => {
   try {
