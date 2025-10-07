@@ -182,7 +182,7 @@ const AttendancePage = () => {
         <Card style={styles.card}>
           <div style={styles.filterSection}>
             <Row className="g-3 align-items-end">
-              <Col md={4}>
+              <Col md={5}>
                 <div>
                   <label style={{ ...styles.filterLabel, display: 'block', marginBottom: '0.5rem' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '0.5rem', verticalAlign: 'middle' }}>
@@ -209,7 +209,7 @@ const AttendancePage = () => {
                   />
                 </div>
               </Col>
-              <Col md={3}>
+              <Col md={4}>
                 <div>
                   <label style={{ ...styles.filterLabel, display: 'block', marginBottom: '0.5rem' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '0.5rem', verticalAlign: 'middle' }}>
@@ -236,34 +236,72 @@ const AttendancePage = () => {
                   </Form.Select>
                 </div>
               </Col>
-              <Col md={2}>
-                <Button 
-                  style={{
-                    ...styles.button,
-                    background: 'linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%)',
-                    width: '100%'
-                  }}
-                  onClick={handleRefresh} 
-                  disabled={refreshing}
-                >
-                  <FiRefreshCw style={{ marginRight: '0.5rem', fontSize: '1rem' }} className={refreshing ? 'spin' : ''} />
-                  Refresh
-                </Button>
-              </Col>
               <Col md={3}>
-                <Button
-                  style={{
-                    ...styles.button,
-                    background: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
-                    width: '100%'
-                  }}
-                  onClick={() => setShowExportModal(true)}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '0.5rem' }}>
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  Export PDF
-                </Button>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <Button 
+                    style={{
+                      flex: 1,
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      padding: '0.75rem 1rem',
+                      fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%)',
+                      boxShadow: '0 2px 8px rgba(42, 63, 157, 0.2)',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem'
+                    }}
+                    onClick={handleRefresh} 
+                    disabled={refreshing}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(42, 63, 157, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(42, 63, 157, 0.2)';
+                    }}
+                  >
+                    <FiRefreshCw style={{ fontSize: '0.95rem' }} className={refreshing ? 'spin' : ''} />
+                    <span>Refresh</span>
+                  </Button>
+                  <Button
+                    style={{
+                      flex: 1,
+                      borderRadius: '10px',
+                      fontWeight: 700,
+                      fontSize: '0.85rem',
+                      padding: '0.75rem 1rem',
+                      fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+                      border: 'none',
+                      background: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+                      boxShadow: '0 2px 8px rgba(100, 116, 139, 0.2)',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.5rem'
+                    }}
+                    onClick={() => setShowExportModal(true)}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(100, 116, 139, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 2px 8px rgba(100, 116, 139, 0.2)';
+                    }}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <span>Export</span>
+                  </Button>
+                </div>
               </Col>
             </Row>
           </div>
