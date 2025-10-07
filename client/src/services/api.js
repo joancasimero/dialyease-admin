@@ -6,7 +6,7 @@ console.log('🔧 Environment Variables:', {
   NODE_ENV: process.env.NODE_ENV
 });
 
-const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const baseURL = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api`;
 console.log('🌐 API Base URL:', baseURL);
 
 const api = axios.create({
