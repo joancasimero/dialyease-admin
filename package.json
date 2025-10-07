@@ -31,7 +31,7 @@
     "mongodb": "^6.15.0",
     "mongoose": "^8.13.1",
     "node-cron": "^4.1.0",
-    "nodemailer": "^7.0.3",
+    "nodemailer": "^7.0.9",
     "pdfkit": "^0.17.1",
     "react-bootstrap-icons": "^1.11.6",
     "react-circular-progressbar": "^2.2.0",

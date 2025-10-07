@@ -1,6 +1,7 @@
 const Admin = require('../models/Admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const { sendOTPEmail } = require('../utils/emailService');
 
 // Temporary in-memory OTP storage (in production, use Redis or database)
 const otpStore = new Map();
@@ -252,14 +253,28 @@ const requestPasswordReset = async (req, res) => {
       verified: false
     });
     
-    // In production, send OTP via email
-    // For now, we'll log it (you can integrate nodemailer later)
-    console.log(`📧 OTP for ${email}: ${otp}`);
-    
-    res.json({ 
-      message: 'OTP sent to your email. Please check your console for development.',
-      otp: process.env.NODE_ENV === 'development' ? otp : undefined // Only show in dev
-    });
+    // Send OTP via email
+    try {
+      await sendOTPEmail(email, otp);
+      console.log(`✅ OTP sent to ${email}`);
+      
+      res.json({ 
+        message: 'OTP has been sent to your email. Please check your inbox.',
+      });
+    } catch (emailError) {
+      console.error('Email sending failed:', emailError);
+      // Fallback: show OTP in development mode if email fails
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`📧 DEV MODE - OTP for ${email}: ${otp}`);
+        return res.json({ 
+          message: 'Email service unavailable. OTP logged to console (dev mode).',
+          otp: otp
+        });
+      }
+      return res.status(500).json({ 
+        message: 'Failed to send OTP email. Please try again later or contact support.' 
+      });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
