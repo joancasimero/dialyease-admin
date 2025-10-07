@@ -38,7 +38,11 @@ const PatientsPage = () => {
   const fetchPatients = async () => {
     try {
       const response = await api.get('/patients');
-      setPatients((response.data.data || response.data).filter(p => p.approved));
+      console.log('📊 Patients Response:', response.data); // DEBUG
+      const patientsData = response.data.data || response.data;
+      console.log('📊 Patients Data:', patientsData); // DEBUG
+      console.log('📊 Total Patients:', patientsData.length); // DEBUG
+      setPatients(patientsData.filter(p => p.approved));
     } catch (error) {
       console.error("Error fetching patients:", error);
     } finally {

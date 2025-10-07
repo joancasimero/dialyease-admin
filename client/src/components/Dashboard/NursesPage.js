@@ -38,12 +38,18 @@ const NursesPage = () => {
         : '/nurses';
       const res = await api.get(endpoint);
       
+      console.log('👨‍⚕️ Nurses Response:', res.data); // DEBUG
+      
       if (showArchived) {
         setNurses(res.data.data || res.data);
       } else {
-        setNurses(res.data.filter(nurse => nurse.approved));
+        const nursesData = res.data;
+        console.log('👨‍⚕️ Nurses Data:', nursesData); // DEBUG
+        console.log('👨‍⚕️ Total Nurses:', nursesData.length); // DEBUG
+        setNurses(nursesData.filter(nurse => nurse.approved));
       }
     } catch (err) {
+      console.error('👨‍⚕️ Error fetching nurses:', err); // DEBUG
       setError("Failed to fetch nurses.");
     } finally {
       setLoading(false);
