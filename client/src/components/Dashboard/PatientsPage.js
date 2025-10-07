@@ -48,7 +48,7 @@ const PatientsPage = () => {
 
   const fetchArchivedPatients = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/patients/archived`);
+      const response = await api.get('/patients/archived');
       setArchivedPatients(Array.isArray(response.data.data) ? response.data.data : []);
     } catch (error) {
       console.error("Error fetching archived patients:", error);
@@ -86,7 +86,7 @@ const PatientsPage = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(
+      const response = await api.put(
         `${API_BASE_URL}/patients/${editPatient._id}`,
         editPatient
       );
@@ -110,8 +110,8 @@ const PatientsPage = () => {
 
   const confirmArchive = async () => {
     try {
-      await axios.delete(
-        `${API_BASE_URL}/patients/${deletePatientId}`
+      await api.delete(
+        `/patients/${deletePatientId}`
       );
       setPatients((prev) => prev.filter((p) => p._id !== deletePatientId));
       fetchArchivedPatients(); 
