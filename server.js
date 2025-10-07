@@ -291,13 +291,18 @@ function authenticateJWT(req, res, next) {
 }
 
 const transporter = nodemailer.createTransport({
-  service: 'Gmail', // You can change this to other services like 'Outlook', 'Yahoo', etc.
+  host: 'smtp.gmail.com',
+  port: 465, // Use port 465 with SSL
+  secure: true, // Use SSL
   auth: {
-    user: process.env.EMAIL_USER || 'trustcapstonegroup@gmail.com', // Change this
-    pass: process.env.EMAIL_PASS || 'qfkj ovlc ctox jtbj', // Change this
+    user: process.env.EMAIL_USER || 'trustcapstonegroup@gmail.com',
+    pass: process.env.EMAIL_PASS || 'qfkj ovlc ctox jtbj',
   },
   timeout: 30000, // 30 seconds timeout for email sending
   connectionTimeout: 30000, // 30 seconds connection timeout
+  tls: {
+    rejectUnauthorized: true
+  }
 });
 
 // Verify nodemailer connection on startup
