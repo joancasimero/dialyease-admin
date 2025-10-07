@@ -8,7 +8,10 @@ const {
   createAdmin,
   updateAdminRole,
   toggleAdminStatus,
-  updateAdminInfo
+  updateAdminInfo,
+  requestPasswordReset,
+  verifyOTP,
+  resetPasswordWithOTP
 } = require('../controllers/adminController');
 const { protect } = require('../middlewares/authMiddleware');
 
@@ -64,6 +67,11 @@ router.post('/reset-password', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Forgot password routes (no authentication required)
+router.post('/forgot-password', requestPasswordReset);
+router.post('/verify-otp', verifyOTP);
+router.post('/reset-password-otp', resetPasswordWithOTP);
 
 router.post('/register', registerAdmin);
 router.post('/login', loginAdmin);

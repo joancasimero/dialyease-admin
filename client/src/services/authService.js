@@ -87,7 +87,7 @@ const verifyAdminOtp = async (email, otp) => {
 };
 
 const resetAdminPassword = async (email, newPassword) => {
-  const response = await axios.post(API_URL + '/reset-password', { email, new_password: newPassword });
+  const response = await axios.post(API_URL + '/reset-password-otp', { email, new_password: newPassword });
   return response.data;
 };
 

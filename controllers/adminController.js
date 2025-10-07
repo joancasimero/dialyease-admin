@@ -2,6 +2,9 @@ const Admin = require('../models/Admin');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
+// Temporary in-memory OTP storage (in production, use Redis or database)
+const otpStore = new Map();
+
 const registerAdmin = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -224,6 +227,119 @@ const updateAdminInfo = async (req, res) => {
   }
 };
 
+// Generate 6-digit OTP
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// Request OTP for password reset
+const requestPasswordReset = async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(404).json({ message: 'No admin account found with this email' });
+    }
+    
+    // Generate OTP
+    const otp = generateOTP();
+    
+    // Store OTP with 10-minute expiry
+    otpStore.set(email, {
+      otp,
+      expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+      verified: false
+    });
+    
+    // In production, send OTP via email
+    // For now, we'll log it (you can integrate nodemailer later)
+    console.log(`📧 OTP for ${email}: ${otp}`);
+    
+    res.json({ 
+      message: 'OTP sent to your email. Please check your console for development.',
+      otp: process.env.NODE_ENV === 'development' ? otp : undefined // Only show in dev
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Verify OTP
+const verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    
+    const storedOTP = otpStore.get(email);
+    
+    if (!storedOTP) {
+      return res.status(400).json({ message: 'No OTP request found. Please request a new OTP.' });
+    }
+    
+    if (Date.now() > storedOTP.expiresAt) {
+      otpStore.delete(email);
+      return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+    }
+    
+    if (storedOTP.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP. Please try again.' });
+    }
+    
+    // Mark OTP as verified
+    storedOTP.verified = true;
+    otpStore.set(email, storedOTP);
+    
+    res.json({ message: 'OTP verified successfully. You may now reset your password.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Reset password after OTP verification
+const resetPasswordWithOTP = async (req, res) => {
+  try {
+    const { email, new_password } = req.body;
+    
+    const storedOTP = otpStore.get(email);
+    
+    if (!storedOTP || !storedOTP.verified) {
+      return res.status(400).json({ message: 'Please verify OTP first.' });
+    }
+    
+    if (Date.now() > storedOTP.expiresAt) {
+      otpStore.delete(email);
+      return res.status(400).json({ message: 'OTP session expired. Please start over.' });
+    }
+    
+    // Password validation
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{9,}$/;
+    if (!passwordRegex.test(new_password)) {
+      return res.status(400).json({
+        message: 'Password must be at least 9 characters, include an uppercase letter, a number, and a special character.'
+      });
+    }
+    
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(404).json({ message: 'Admin not found' });
+    }
+    
+    // Update password
+    admin.password = new_password;
+    await admin.save();
+    
+    // Clear OTP from storage
+    otpStore.delete(email);
+    
+    res.json({ message: 'Password reset successfully. You can now login with your new password.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 module.exports = {
   registerAdmin,
   loginAdmin,
@@ -233,4 +349,7 @@ module.exports = {
   updateAdminRole,
   toggleAdminStatus,
   updateAdminInfo,
+  requestPasswordReset,
+  verifyOTP,
+  resetPasswordWithOTP,
 };
