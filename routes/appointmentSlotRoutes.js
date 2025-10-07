@@ -5,7 +5,6 @@ const AppointmentSlot = require('../models/AppointmentSlot');
 const Machine = require('../models/Machine');
 const Patient = require('../models/Patient');
 const { sendRescheduleApprovalNotification, sendRescheduleDenialNotification } = require('../utils/notificationService');
-const Patient = require('../models/Patient');
 const { protect } = require('../middlewares/authMiddleware');
 // Submit a reschedule request (patient)
 router.post('/reschedule-request', protect, async (req, res) => {
