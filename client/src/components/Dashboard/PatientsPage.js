@@ -87,7 +87,7 @@ const PatientsPage = () => {
     e.preventDefault();
     try {
       const response = await api.put(
-        `${API_BASE_URL}/patients/${editPatient._id}`,
+        `/patients/${editPatient._id}`,
         editPatient
       );
       const updatedPatient = response.data.patient || response.data;
@@ -125,7 +125,7 @@ const PatientsPage = () => {
 
   const handleRestore = async (id) => {
     try {
-      await axios.put(`${API_BASE_URL}/patients/${id}/restore`);
+      await api.put(`/patients/${id}/restore`);
       fetchPatients();
       fetchArchivedPatients();
     } catch (error) {
@@ -142,8 +142,8 @@ const PatientsPage = () => {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(
-        `${API_BASE_URL}/patients/${deletePatientId}`
+      await api.delete(
+        `/patients/${deletePatientId}`
       );
       setPatients((prev) => prev.filter((p) => p._id !== deletePatientId));
       setShowDeleteModal(false);
@@ -177,7 +177,7 @@ const PatientsPage = () => {
 
   const exportPatientsPDF = async (patientsToExport) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/patients/export/pdf`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/patients/export/pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ patients: patientsToExport }),
@@ -200,7 +200,7 @@ const PatientsPage = () => {
 
   const exportSinglePatientPDF = async (patient) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/patients/export/pdf`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/patients/export/pdf`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ patients: [patient] }),
