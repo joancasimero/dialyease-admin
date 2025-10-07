@@ -4,6 +4,8 @@ const RescheduleRequest = require('../models/RescheduleRequest');
 const AppointmentSlot = require('../models/AppointmentSlot');
 const Machine = require('../models/Machine');
 const Patient = require('../models/Patient');
+const { sendRescheduleApprovalNotification, sendRescheduleDenialNotification } = require('../utils/notificationService');
+const Patient = require('../models/Patient');
 const { protect } = require('../middlewares/authMiddleware');
 // Submit a reschedule request (patient)
 router.post('/reschedule-request', protect, async (req, res) => {
@@ -43,12 +45,36 @@ router.get('/reschedule-requests', protect, async (req, res) => {
 // Approve a reschedule request (admin)
 router.post('/reschedule-requests/:id/approve', protect, async (req, res) => {
   try {
-    const request = await RescheduleRequest.findById(req.params.id);
+    const request = await RescheduleRequest.findById(req.params.id).populate('patient');
     if (!request) return res.status(404).json({ message: 'Request not found' });
     if (request.status !== 'pending') return res.status(400).json({ message: 'Request already processed' });
 
     request.status = 'approved';
     await request.save();
+
+    // Send push notification to patient
+    try {
+      const patient = request.patient;
+      if (patient) {
+        const formattedDate = new Date(request.requestedDate).toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        
+        const notificationResult = await sendRescheduleApprovalNotification(patient, formattedDate);
+        
+        if (notificationResult.success) {
+          console.log(`✅ Reschedule approval notification sent to ${patient.firstName} ${patient.lastName}`);
+        } else {
+          console.log(`⚠️ Could not send notification: ${notificationResult.reason}`);
+        }
+      }
+    } catch (notifError) {
+      console.error('Error sending reschedule approval notification:', notifError.message);
+      // Don't fail the approval just because notification failed
+    }
 
     // Find an available afternoon slot for the requested date
     const slot = await AppointmentSlot.findOne({
@@ -62,19 +88,20 @@ router.post('/reschedule-requests/:id/approve', protect, async (req, res) => {
       return res.json({
         success: true,
         request,
-        message: 'Reschedule approved, but no available afternoon slot for this date.'
+        message: 'Reschedule approved, but no available afternoon slot for this date.',
+        notificationSent: true
       });
     }
 
     // Book the slot for the patient
-    slot.patient = request.patient;
+    slot.patient = request.patient._id;
     slot.isBooked = true;
     slot.bookedAt = new Date();
     slot.status = 'booked';
     await slot.save();
 
     // Optionally update patient record (if you track slot info there)
-    await Patient.findByIdAndUpdate(request.patient, {
+    await Patient.findByIdAndUpdate(request.patient._id, {
       appointmentSlot: slot.slotNumber,
       assignedMachine: slot.machine,
       assignedTimeSlot: 'afternoon',
@@ -91,7 +118,8 @@ router.post('/reschedule-requests/:id/approve', protect, async (req, res) => {
         machine: slot.machine,
         patient: slot.patient
       },
-      message: 'Reschedule approved and afternoon slot claimed.'
+      message: 'Reschedule approved and afternoon slot claimed.',
+      notificationSent: true
     });
   } catch (err) {
     console.error('Error approving reschedule request:', err);
@@ -102,15 +130,57 @@ router.post('/reschedule-requests/:id/approve', protect, async (req, res) => {
 // Deny a reschedule request (admin)
 router.post('/reschedule-requests/:id/deny', protect, async (req, res) => {
   try {
-    const request = await RescheduleRequest.findById(req.params.id);
+    const request = await RescheduleRequest.findById(req.params.id).populate('patient');
     if (!request || request.status !== 'pending') {
       return res.status(404).json({ message: 'Request not found or already processed.' });
     }
+    
+    const reason = req.body.reason || 'Denied by admin.';
     request.status = 'denied';
-    request.adminResponse = req.body.reason || 'Denied by admin.';
+    request.adminResponse = reason;
     await request.save();
-    res.json({ success: true, message: 'Reschedule request denied.' });
+
+    // Send push notification to patient
+    try {
+      const patient = request.patient;
+      if (patient) {
+        const originalDate = new Date(request.originalScheduledDate).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        
+        const requestedDate = new Date(request.requestedDate).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        });
+        
+        const notificationResult = await sendRescheduleDenialNotification(
+          patient, 
+          reason,
+          originalDate,
+          requestedDate
+        );
+        
+        if (notificationResult.success) {
+          console.log(`✅ Reschedule denial notification sent to ${patient.firstName} ${patient.lastName}`);
+        } else {
+          console.log(`⚠️ Could not send notification: ${notificationResult.reason}`);
+        }
+      }
+    } catch (notifError) {
+      console.error('Error sending reschedule denial notification:', notifError.message);
+      // Don't fail the denial just because notification failed
+    }
+
+    res.json({ 
+      success: true, 
+      message: 'Reschedule request denied.',
+      notificationSent: true
+    });
   } catch (err) {
+    console.error('Error denying reschedule request:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });

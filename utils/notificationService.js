@@ -153,6 +153,33 @@ const sendRescheduleApprovalNotification = async (patient, newDate) => {
 };
 
 /**
+ * Send reschedule denial notification
+ */
+const sendRescheduleDenialNotification = async (patient, reason = '', originalDate = '', requestedDate = '') => {
+  if (!patient.deviceToken) {
+    return { success: false, reason: 'No device token' };
+  }
+
+  const notification = {
+    title: '❌ Reschedule Request Denied',
+    body: reason 
+      ? `Your reschedule request was denied. Reason: ${reason}` 
+      : 'Your reschedule request was not approved. Please keep your original appointment.'
+  };
+
+  const data = {
+    type: 'reschedule_denial',
+    patientId: patient._id.toString(),
+    originalDate: originalDate,
+    requestedDate: requestedDate,
+    reason: reason || 'Not specified',
+    screen: 'appointments'
+  };
+
+  return await sendPushNotification(patient.deviceToken, notification, data);
+};
+
+/**
  * Send general notification to patient
  */
 const sendGeneralNotification = async (patient, title, body, additionalData = {}) => {
@@ -262,6 +289,7 @@ module.exports = {
   sendAccountApprovalNotification,
   sendAppointmentReminder,
   sendRescheduleApprovalNotification,
+  sendRescheduleDenialNotification,
   sendGeneralNotification,
   sendAccountRejectionNotification
 };
