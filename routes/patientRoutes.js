@@ -7,6 +7,10 @@ const admin = require('firebase-admin');
 const AppointmentSlot = require('../models/AppointmentSlot');
 const RescheduleRequest = require('../models/RescheduleRequest');
 const moment = require('moment-timezone');
+const { 
+  sendAccountApprovalNotification, 
+  sendAccountRejectionNotification 
+} = require('../utils/notificationService');
 
 // Check if email already exists
 router.post('/check-email', async (req, res) => {
@@ -840,6 +844,50 @@ router.put('/:id/next-appointment', async (req, res) => {
     res.json({ success: true, data: updatedPatient });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Failed to update nextAppointment', error: err.message });
+  }
+});
+
+// PUT /api/patients/:id/reject - Reject patient registration
+router.put('/:id/reject', async (req, res) => {
+  try {
+    const { reason } = req.body; // Optional rejection reason
+    
+    const patient = await Patient.findById(req.params.id);
+
+    if (!patient) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Patient not found' 
+      });
+    }
+
+    // Send push notification before updating/deleting
+    try {
+      const notificationResult = await sendAccountRejectionNotification(patient, reason);
+      if (notificationResult.success) {
+        console.log(`✅ Rejection notification sent to ${patient.firstName} ${patient.lastName}`);
+      } else {
+        console.log(`⚠️ Could not send notification: ${notificationResult.reason}`);
+      }
+    } catch (notifError) {
+      console.error('Could not send notification:', notifError.message);
+      // Don't fail the rejection just because notification failed
+    }
+
+    // Delete the patient (or you can mark as rejected instead)
+    await Patient.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ 
+      success: true,
+      message: 'Patient rejected successfully',
+      notificationSent: true
+    });
+  } catch (error) {
+    console.error('Error rejecting patient:', error);
+    res.status(500).json({ 
+      success: false,
+      message: error.message 
+    });
   }
 });
 
