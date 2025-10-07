@@ -851,8 +851,35 @@ app.get('/api/approval/nurses', authenticateJWT, async (req, res) => {
 });
 
 app.put('/api/approval/patient/:id/approve', authenticateJWT, async (req, res) => {
-  await Patient.findByIdAndUpdate(req.params.id, { approved: true });
-  res.json({ message: 'Patient approved' });
+  try {
+    const patient = await Patient.findByIdAndUpdate(
+      req.params.id, 
+      { approved: true },
+      { new: true } // Return updated document
+    );
+    
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+    
+    // Send push notification to patient
+    const { sendAccountApprovalNotification } = require('./utils/notificationService');
+    const notificationResult = await sendAccountApprovalNotification(patient);
+    
+    if (notificationResult.success) {
+      console.log(`✅ Approval notification sent to ${patient.firstName} ${patient.lastName}`);
+    } else {
+      console.log(`⚠️ Could not send notification: ${notificationResult.reason}`);
+    }
+    
+    res.json({ 
+      message: 'Patient approved',
+      notificationSent: notificationResult.success 
+    });
+  } catch (error) {
+    console.error('Error approving patient:', error);
+    res.status(500).json({ message: 'Error approving patient', error: error.message });
+  }
 });
 
 app.put('/api/approval/nurse/:id/approve', authenticateJWT, async (req, res) => {
