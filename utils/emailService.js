@@ -2,18 +2,21 @@ const nodemailer = require('nodemailer');
 
 // Create email transporter
 const createTransporter = () => {
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // Use SSL
+  // Try using Gmail's OAuth2 or direct service
+  const config = {
+    service: 'gmail',
     auth: {
-      user: process.env.EMAIL_USER, // Your email
-      pass: process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS // Your app password (support both names)
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS
     },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
+    // Add these for better compatibility with cloud hosting
+    pool: true,
+    maxConnections: 1,
+    rateDelta: 20000,
+    rateLimit: 5
+  };
+
+  return nodemailer.createTransport(config);
 };
 
 // Send OTP email
