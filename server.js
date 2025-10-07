@@ -14,30 +14,18 @@ const moment = require('moment-timezone');
 const http = require('http');
 const { Server } = require('socket.io');
 
-// Initialize Firebase Admin (supports both env variable and file)
+// Initialize Firebase Admin (optional - only if service account file exists)
 let firebaseInitialized = false;
 try {
-  let serviceAccount;
-  
-  // Try to get service account from environment variable first
-  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    console.log('📱 Loading Firebase config from FIREBASE_SERVICE_ACCOUNT environment variable...');
-    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  } else {
-    // Fallback to local file
-    console.log('📱 Loading Firebase config from local file...');
-    serviceAccount = require('./dialyease-e42ac-firebase-adminsdk-fbsvc-01418afe2b.json');
-  }
-  
+  const serviceAccount = require('./dialyease-e42ac-firebase-adminsdk-fbsvc-01418afe2b.json');
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
   firebaseInitialized = true;
-  console.log('✅ Firebase Admin initialized successfully');
+  console.log('Firebase Admin initialized successfully');
 } catch (error) {
-  console.log('⚠️ Firebase initialization failed:', error.message);
-  console.log('⚠️ Firebase features (push notifications) will be disabled');
-  console.log('💡 To enable: Set FIREBASE_SERVICE_ACCOUNT environment variable with your service account JSON');
+  console.log('Firebase service account file not found - Firebase features disabled');
+  console.log('To enable Firebase, add your service account file to the project root');
 }
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -308,6 +296,45 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER || 'trustcapstonegroup@gmail.com', // Change this
     pass: process.env.EMAIL_PASS || 'qfkj ovlc ctox jtbj', // Change this
   },
+  timeout: 30000, // 30 seconds timeout for email sending
+  connectionTimeout: 30000, // 30 seconds connection timeout
+});
+
+// Verify nodemailer connection on startup
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log('❌ Nodemailer connection error:', error);
+  } else {
+    console.log('✅ Nodemailer is ready to send emails');
+  }
+});
+
+// Test endpoint to check if forgot password flow works without sending email
+app.post('/api/auth/test-forgot-password', async (req, res) => {
+  const { email } = req.body;
+  console.log('🧪 TEST - Forgot password request for:', email);
+  
+  try {
+    const patient = await Patient.findOne({ email });
+    if (!patient) {
+      console.log('❌ TEST - Patient not found:', email);
+      return res.status(400).json({ message: 'Patient not found', testMode: true });
+    }
+    
+    const otp = generateOTP();
+    console.log('✅ TEST - OTP generated:', otp);
+    console.log('✅ TEST - Patient found:', patient.firstName, patient.lastName);
+    
+    res.json({ 
+      message: 'Test successful - OTP would be sent',
+      testMode: true,
+      otp: otp,
+      patientFound: true
+    });
+  } catch (err) {
+    console.error('❌ TEST - Error:', err);
+    res.status(500).json({ message: 'Test failed', error: err.message });
+  }
 });
 
 app.post('/api/auth/verify-otp', (req, res) => {
@@ -410,15 +437,25 @@ const generateOTP = () => Math.floor(100000 + Math.random() * 900000).toString()
 
 app.post('/api/auth/forgot-password', async (req, res) => {
   const { email } = req.body;
-
-  const patient = await Patient.findOne({ email });
-  if (!patient) return res.status(400).json({ message: 'Patient not found' });
-
-  const otp = generateOTP();
-  otpStore[email] = { otp, expiresAt: Date.now() + 15 * 60 * 1000 };
+  console.log('📧 Forgot password request received for patient email:', email);
 
   try {
-    await transporter.sendMail({
+    const patient = await Patient.findOne({ email });
+    if (!patient) {
+      console.log('❌ Patient not found:', email);
+      return res.status(400).json({ message: 'Patient not found' });
+    }
+
+    const otp = generateOTP();
+    otpStore[email] = { otp, expiresAt: Date.now() + 15 * 60 * 1000 };
+    console.log('✅ OTP generated for:', email);
+
+    // Send response immediately, then send email in background
+    res.json({ message: 'OTP sent to email' });
+    console.log('✅ Response sent to client');
+
+    // Send email asynchronously (don't await)
+    transporter.sendMail({
       from: `"DialyEase Support" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Your OTP Code - DialyEase',
@@ -431,7 +468,7 @@ app.post('/api/auth/forgot-password', async (req, res) => {
           
           <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
             <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
-            <p style="color: #666; font-size: 16px;">Hello ${patient.fullName || 'Patient'},</p>
+            <p style="color: #666; font-size: 16px;">Hello ${patient.firstName || 'Patient'},</p>
             <p style="color: #666; font-size: 16px;">We received a request to reset your password. Use the OTP code below:</p>
             
             <div style="text-align: center; margin: 30px 0;">
@@ -449,12 +486,16 @@ app.post('/api/auth/forgot-password', async (req, res) => {
           </div>
         </div>
       `,
+    }).then(() => {
+      console.log('✅ Email sent successfully to:', email);
+    }).catch((err) => {
+      console.error('❌ Email sending failed:', err);
+      // Don't fail the request if email fails - OTP is already stored
     });
 
-    res.json({ message: 'OTP sent to email' });
   } catch (err) {
-    console.error('Email sending failed:', err);
-    res.status(500).json({ message: 'Failed to send email' });
+    console.error('❌ Forgot password error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
@@ -523,6 +564,114 @@ app.post('/api/auth/reset-password', async (req, res) => {
     res.json({ message: 'Password reset successful' });
   } catch (err) {
     console.error('Reset password error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// --- NURSE FORGOT PASSWORD ENDPOINTS ---
+
+// Nurse: Request OTP for password reset
+app.post('/api/nurses/forgot-password', async (req, res) => {
+  const { email } = req.body;
+  console.log('📧 Forgot password request received for nurse email:', email);
+
+  try {
+    const nurse = await Nurse.findOne({ email });
+    if (!nurse) {
+      console.log('❌ Nurse not found:', email);
+      return res.status(400).json({ message: 'Nurse not found' });
+    }
+
+    const otp = generateOTP();
+    otpStore[email] = { otp, expiresAt: Date.now() + 15 * 60 * 1000 };
+    console.log('✅ OTP generated for nurse:', email);
+
+    // Send response immediately, then send email in background
+    res.json({ message: 'OTP sent to email' });
+    console.log('✅ Response sent to client');
+
+    // Send email asynchronously (don't await)
+    transporter.sendMail({
+      from: `"DialyEase Support" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Your OTP Code - DialyEase Nurse Portal',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <img src="https://drive.google.com/uc?export=view&id=12NssR4VbFJLHRQ_-_9aSLS_LVdEqW-P8" alt="DialyEase Logo" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #263A99; margin-bottom: 15px;">
+            <h1 style="color: #263A99; margin: 0;">DialyEase Nurse Portal</h1>
+          </div>
+          
+          <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
+            <p style="color: #666; font-size: 16px;">Hello ${nurse.firstName || 'Nurse'},</p>
+            <p style="color: #666; font-size: 16px;">We received a request to reset your password. Use the OTP code below:</p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <div style="background-color: #263A99; color: white; font-size: 32px; font-weight: bold; padding: 20px; border-radius: 8px; letter-spacing: 3px;">
+                ${otp}
+              </div>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; text-align: center;">This code expires in 15 minutes.</p>
+            <p style="color: #666; font-size: 14px; text-align: center;">If you didn't request this, please ignore this email.</p>
+          </div>
+          
+          <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
+            <p>© 2024 DialyEase. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+    }).then(() => {
+      console.log('✅ Email sent successfully to nurse:', email);
+    }).catch((err) => {
+      console.error('❌ Nurse email sending failed:', err);
+      // Don't fail the request if email fails - OTP is already stored
+    });
+
+  } catch (err) {
+    console.error('❌ Nurse forgot password error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+// Nurse: Verify OTP
+app.post('/api/nurses/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+  const record = otpStore[email];
+
+  if (!record) return res.status(400).json({ message: 'OTP not found or expired' });
+
+  if (record.expiresAt < Date.now()) {
+    delete otpStore[email];
+    return res.status(400).json({ message: 'OTP expired' });
+  }
+
+  if (record.otp !== otp) {
+    return res.status(400).json({ message: 'Invalid OTP' });
+  }
+
+  delete otpStore[email];
+  res.json({ message: 'OTP verified' });
+});
+
+// Nurse: Reset password
+app.post('/api/nurses/reset-password', async (req, res) => {
+  const { email, new_password } = req.body;
+  if (!email || !new_password) {
+    return res.status(400).json({ message: 'Email and new password are required' });
+  }
+  try {
+    const nurse = await Nurse.findOne({ email });
+    if (!nurse) {
+      return res.status(404).json({ message: 'Nurse not found' });
+    }
+    const hashed = await bcrypt.hash(new_password, 10);
+    nurse.password = hashed;
+    await nurse.save();
+    res.json({ message: 'Password reset successful' });
+  } catch (err) {
+    console.error('Nurse reset password error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
@@ -863,35 +1012,8 @@ app.get('/api/approval/nurses', authenticateJWT, async (req, res) => {
 });
 
 app.put('/api/approval/patient/:id/approve', authenticateJWT, async (req, res) => {
-  try {
-    const patient = await Patient.findByIdAndUpdate(
-      req.params.id, 
-      { approved: true },
-      { new: true } // Return updated document
-    );
-    
-    if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
-    }
-    
-    // Send push notification to patient
-    const { sendAccountApprovalNotification } = require('./utils/notificationService');
-    const notificationResult = await sendAccountApprovalNotification(patient);
-    
-    if (notificationResult.success) {
-      console.log(`✅ Approval notification sent to ${patient.firstName} ${patient.lastName}`);
-    } else {
-      console.log(`⚠️ Could not send notification: ${notificationResult.reason}`);
-    }
-    
-    res.json({ 
-      message: 'Patient approved',
-      notificationSent: notificationResult.success 
-    });
-  } catch (error) {
-    console.error('Error approving patient:', error);
-    res.status(500).json({ message: 'Error approving patient', error: error.message });
-  }
+  await Patient.findByIdAndUpdate(req.params.id, { approved: true });
+  res.json({ message: 'Patient approved' });
 });
 
 app.put('/api/approval/nurse/:id/approve', authenticateJWT, async (req, res) => {
@@ -900,38 +1022,8 @@ app.put('/api/approval/nurse/:id/approve', authenticateJWT, async (req, res) => 
 });
 
 app.delete('/api/approval/patient/:id', authenticateJWT, async (req, res) => {
-  try {
-    // Get patient data before deleting
-    const patient = await Patient.findById(req.params.id);
-    
-    if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
-    }
-    
-    // Send rejection notification before deleting
-    const { sendAccountRejectionNotification } = require('./utils/notificationService');
-    const notificationResult = await sendAccountRejectionNotification(
-      patient, 
-      'Your registration did not meet our requirements.' // You can customize this message
-    );
-    
-    if (notificationResult.success) {
-      console.log(`✅ Rejection notification sent to ${patient.firstName} ${patient.lastName}`);
-    } else {
-      console.log(`⚠️ Could not send rejection notification: ${notificationResult.reason}`);
-    }
-    
-    // Delete the patient
-    await Patient.findByIdAndDelete(req.params.id);
-    
-    res.json({ 
-      message: 'Patient deleted',
-      notificationSent: notificationResult.success 
-    });
-  } catch (error) {
-    console.error('Error deleting patient:', error);
-    res.status(500).json({ message: 'Error deleting patient', error: error.message });
-  }
+  await Patient.findByIdAndDelete(req.params.id);
+  res.json({ message: 'Patient deleted' });
 });
 
 app.delete('/api/approval/nurse/:id', authenticateJWT, async (req, res) => {
@@ -1253,100 +1345,6 @@ app.post('/api/admin/reset-password', async (req, res) => {
   admin.password = new_password; // NOT hashed!
   await admin.save(); // The pre-save hook will hash it
   res.json({ message: 'Password reset successful' });
-});
-
-// --- NURSE FORGOT PASSWORD ENDPOINTS ---
-
-// Nurse: Request OTP for password reset
-app.post('/api/nurses/forgot-password', async (req, res) => {
-  const { email } = req.body;
-
-  const nurse = await Nurse.findOne({ email });
-  if (!nurse) return res.status(400).json({ message: 'Nurse not found' });
-
-  const otp = generateOTP();
-  otpStore[email] = { otp, expiresAt: Date.now() + 15 * 60 * 1000 };
-
-  try {
-    await transporter.sendMail({
-      from: `"DialyEase Support" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Your OTP Code - DialyEase Nurse Portal',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://drive.google.com/uc?export=view&id=12NssR4VbFJLHRQ_-_9aSLS_LVdEqW-P8" alt="DialyEase Logo" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #263A99; margin-bottom: 15px;">
-            <h1 style="color: #263A99; margin: 0;">DialyEase Nurse Portal</h1>
-          </div>
-          
-          <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
-            <p style="color: #666; font-size: 16px;">Hello ${nurse.firstName || 'Nurse'},</p>
-            <p style="color: #666; font-size: 16px;">We received a request to reset your password. Use the OTP code below:</p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <div style="background-color: #263A99; color: white; font-size: 32px; font-weight: bold; padding: 20px; border-radius: 8px; letter-spacing: 3px;">
-                ${otp}
-              </div>
-            </div>
-            
-            <p style="color: #666; font-size: 14px; text-align: center;">This code expires in 15 minutes.</p>
-            <p style="color: #666; font-size: 14px; text-align: center;">If you didn't request this, please ignore this email.</p>
-          </div>
-          
-          <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-            <p>© 2024 DialyEase. All rights reserved.</p>
-          </div>
-        </div>
-      `,
-    });
-
-    res.json({ message: 'OTP sent to email' });
-  } catch (err) {
-    console.error('Nurse OTP email sending failed:', err);
-    res.status(500).json({ message: 'Failed to send email' });
-  }
-});
-
-// Nurse: Verify OTP
-app.post('/api/nurses/verify-otp', (req, res) => {
-  const { email, otp } = req.body;
-  const record = otpStore[email];
-
-  if (!record) return res.status(400).json({ message: 'OTP not found or expired' });
-
-  if (record.expiresAt < Date.now()) {
-    delete otpStore[email];
-    return res.status(400).json({ message: 'OTP expired' });
-  }
-
-  if (record.otp !== otp) {
-    return res.status(400).json({ message: 'Invalid OTP' });
-  }
-
-  delete otpStore[email];
-  res.json({ message: 'OTP verified' });
-});
-
-// Nurse: Reset password
-app.post('/api/nurses/reset-password', async (req, res) => {
-  const { email, new_password } = req.body;
-  if (!email || !new_password) {
-    return res.status(400).json({ message: 'Email and new password are required' });
-  }
-  try {
-    const nurse = await Nurse.findOne({ email });
-    if (!nurse) {
-      return res.status(404).json({ message: 'Nurse not found' });
-    }
-    const hashed = await bcrypt.hash(new_password, 10);
-    nurse.password = hashed;
-    await nurse.save();
-    res.json({ message: 'Password reset successful' });
-  } catch (err) {
-    console.error('Nurse reset password error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
 });
 
 // Firestore listener (only if Firebase is initialized)
