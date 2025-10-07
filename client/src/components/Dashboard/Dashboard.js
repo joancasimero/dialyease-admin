@@ -694,13 +694,6 @@ function getPhilippineDateStr() {
                   position: 'relative'
                 }}>
                   <div style={{
-                    position: 'absolute',
-                    top: '1rem',
-                    right: '1.5rem',
-                    fontSize: '1.2rem',
-                    color: 'rgba(255, 255, 255, 0.4)'
-                  }}>📅</div>
-                  <div style={{
                     fontSize: '0.9rem',
                     fontWeight: 800,
                     color: 'white',
@@ -809,13 +802,6 @@ function getPhilippineDateStr() {
                   position: 'relative'
                 }}>
                   <div style={{
-                    position: 'absolute',
-                    top: '1rem',
-                    right: '1.5rem',
-                    fontSize: '1.2rem',
-                    color: 'rgba(255, 255, 255, 0.4)'
-                  }}>🕐</div>
-                  <div style={{
                     fontSize: '0.9rem',
                     fontWeight: 800,
                     color: 'white',
@@ -923,13 +909,6 @@ function getPhilippineDateStr() {
                   borderBottom: 'none',
                   position: 'relative'
                 }}>
-                  <div style={{
-                    position: 'absolute',
-                    top: '1rem',
-                    right: '1.5rem',
-                    fontSize: '1.2rem',
-                    color: 'rgba(255, 255, 255, 0.4)'
-                  }}>🎯</div>
                   <div style={{
                     fontSize: '0.9rem',
                     fontWeight: 800,
