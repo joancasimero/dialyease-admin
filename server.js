@@ -900,8 +900,38 @@ app.put('/api/approval/nurse/:id/approve', authenticateJWT, async (req, res) => 
 });
 
 app.delete('/api/approval/patient/:id', authenticateJWT, async (req, res) => {
-  await Patient.findByIdAndDelete(req.params.id);
-  res.json({ message: 'Patient deleted' });
+  try {
+    // Get patient data before deleting
+    const patient = await Patient.findById(req.params.id);
+    
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+    
+    // Send rejection notification before deleting
+    const { sendAccountRejectionNotification } = require('./utils/notificationService');
+    const notificationResult = await sendAccountRejectionNotification(
+      patient, 
+      'Your registration did not meet our requirements.' // You can customize this message
+    );
+    
+    if (notificationResult.success) {
+      console.log(`✅ Rejection notification sent to ${patient.firstName} ${patient.lastName}`);
+    } else {
+      console.log(`⚠️ Could not send rejection notification: ${notificationResult.reason}`);
+    }
+    
+    // Delete the patient
+    await Patient.findByIdAndDelete(req.params.id);
+    
+    res.json({ 
+      message: 'Patient deleted',
+      notificationSent: notificationResult.success 
+    });
+  } catch (error) {
+    console.error('Error deleting patient:', error);
+    res.status(500).json({ message: 'Error deleting patient', error: error.message });
+  }
 });
 
 app.delete('/api/approval/nurse/:id', authenticateJWT, async (req, res) => {
