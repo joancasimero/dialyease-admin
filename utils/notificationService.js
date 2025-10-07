@@ -24,16 +24,20 @@ const sendPushNotification = async (deviceToken, notification, data = {}) => {
     console.log('📱 Sending push notification to device:', deviceToken.substring(0, 20) + '...');
     console.log('📱 Notification:', notification);
 
+    // Convert all data values to strings (FCM requirement)
+    const stringifiedData = {};
+    for (const [key, value] of Object.entries(data)) {
+      stringifiedData[key] = String(value);
+    }
+    stringifiedData.clickAction = 'FLUTTER_NOTIFICATION_CLICK';
+    stringifiedData.timestamp = new Date().toISOString();
+
     const message = {
       notification: {
         title: notification.title,
         body: notification.body,
       },
-      data: {
-        ...data,
-        clickAction: 'FLUTTER_NOTIFICATION_CLICK',
-        timestamp: new Date().toISOString()
-      },
+      data: stringifiedData,
       token: deviceToken,
       android: {
         notification: {
@@ -134,6 +138,7 @@ const sendAppointmentReminder = async (patient, appointmentDate) => {
  */
 const sendRescheduleApprovalNotification = async (patient, newDate) => {
   if (!patient.deviceToken) {
+    console.log('⚠️ Patient has no device token for reschedule approval notification');
     return { success: false, reason: 'No device token' };
   }
 
@@ -142,13 +147,15 @@ const sendRescheduleApprovalNotification = async (patient, newDate) => {
     body: `Your appointment has been rescheduled to ${newDate}. See you then!`
   };
 
+  // FCM requires all data values to be strings
   const data = {
     type: 'reschedule_approval',
     patientId: patient._id.toString(),
-    newDate: newDate,
+    newDate: String(newDate || ''),
     screen: 'appointments'
   };
 
+  console.log('📱 Sending reschedule approval notification to:', patient.firstName, patient.lastName);
   return await sendPushNotification(patient.deviceToken, notification, data);
 };
 
@@ -157,6 +164,7 @@ const sendRescheduleApprovalNotification = async (patient, newDate) => {
  */
 const sendRescheduleDenialNotification = async (patient, reason = '', originalDate = '', requestedDate = '') => {
   if (!patient.deviceToken) {
+    console.log('⚠️ Patient has no device token for reschedule denial notification');
     return { success: false, reason: 'No device token' };
   }
 
@@ -167,15 +175,17 @@ const sendRescheduleDenialNotification = async (patient, reason = '', originalDa
       : 'Your reschedule request was not approved. Please keep your original appointment.'
   };
 
+  // FCM requires all data values to be strings
   const data = {
     type: 'reschedule_denial',
     patientId: patient._id.toString(),
-    originalDate: originalDate,
-    requestedDate: requestedDate,
-    reason: reason || 'Not specified',
+    originalDate: String(originalDate || ''),
+    requestedDate: String(requestedDate || ''),
+    reason: String(reason || 'Not specified'),
     screen: 'appointments'
   };
 
+  console.log('📱 Sending reschedule denial notification to:', patient.firstName, patient.lastName);
   return await sendPushNotification(patient.deviceToken, notification, data);
 };
 

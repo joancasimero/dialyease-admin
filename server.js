@@ -14,18 +14,30 @@ const moment = require('moment-timezone');
 const http = require('http');
 const { Server } = require('socket.io');
 
-// Initialize Firebase Admin (optional - only if service account file exists)
+// Initialize Firebase Admin (supports both env variable and file)
 let firebaseInitialized = false;
 try {
-  const serviceAccount = require('./dialyease-e42ac-firebase-adminsdk-fbsvc-01418afe2b.json');
+  let serviceAccount;
+  
+  // Try to get service account from environment variable first
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    console.log('📱 Loading Firebase config from FIREBASE_SERVICE_ACCOUNT environment variable...');
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+  } else {
+    // Fallback to local file
+    console.log('📱 Loading Firebase config from local file...');
+    serviceAccount = require('./dialyease-e42ac-firebase-adminsdk-fbsvc-01418afe2b.json');
+  }
+  
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
   firebaseInitialized = true;
-  console.log('Firebase Admin initialized successfully');
+  console.log('✅ Firebase Admin initialized successfully');
 } catch (error) {
-  console.log('Firebase service account file not found - Firebase features disabled');
-  console.log('To enable Firebase, add your service account file to the project root');
+  console.log('⚠️ Firebase initialization failed:', error.message);
+  console.log('⚠️ Firebase features (push notifications) will be disabled');
+  console.log('💡 To enable: Set FIREBASE_SERVICE_ACCOUNT environment variable with your service account JSON');
 }
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
