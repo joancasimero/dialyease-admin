@@ -1,41 +1,28 @@
-const nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 
-// Create email transporter
-const createTransporter = () => {
-  // Try using Gmail's OAuth2 or direct service
-  const config = {
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS
-    },
-    // Add these for better compatibility with cloud hosting
-    pool: true,
-    maxConnections: 1,
-    rateDelta: 20000,
-    rateLimit: 5
-  };
+// Initialize SendGrid
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
-  return nodemailer.createTransport(config);
-};
-
-// Send OTP email
+// Send OTP email using SendGrid
 const sendOTPEmail = async (to, otp) => {
   try {
     // Validate email configuration
-    const emailPassword = process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS;
-    if (!process.env.EMAIL_USER || !emailPassword) {
-      throw new Error('Email configuration missing. Please set EMAIL_USER and EMAIL_PASSWORD (or EMAIL_PASS) environment variables.');
+    if (!process.env.SENDGRID_API_KEY) {
+      throw new Error('SendGrid API key missing. Please set SENDGRID_API_KEY environment variable.');
+    }
+
+    if (!process.env.EMAIL_USER) {
+      throw new Error('Sender email missing. Please set EMAIL_USER environment variable.');
     }
 
     console.log('📧 Attempting to send email to:', to);
-    console.log('📧 Using email account:', process.env.EMAIL_USER);
+    console.log('📧 Using SendGrid with sender:', process.env.EMAIL_USER);
     
-    const transporter = createTransporter();
-    
-    const mailOptions = {
-      from: `DialyEase Admin <${process.env.EMAIL_USER}>`,
+    const msg = {
       to: to,
+      from: process.env.EMAIL_USER, // Must be verified in SendGrid
       subject: 'Password Reset OTP - DialyEase Admin',
       html: `
         <!DOCTYPE html>
@@ -141,17 +128,17 @@ const sendOTPEmail = async (to, otp) => {
       `
     };
     
-    console.log('📧 Sending email...');
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent successfully:', info.messageId);
-    console.log('✅ Accepted recipients:', info.accepted);
-    return { success: true, messageId: info.messageId };
+    console.log('📧 Sending email via SendGrid...');
+    const response = await sgMail.send(msg);
+    console.log('✅ Email sent successfully via SendGrid');
+    console.log('✅ Response status:', response[0].statusCode);
+    return { success: true, messageId: response[0].headers['x-message-id'] };
   } catch (error) {
     console.error('❌ Error sending email:', error);
     console.error('❌ Error details:', {
       code: error.code,
-      command: error.command,
-      message: error.message
+      message: error.message,
+      response: error.response?.body
     });
     throw error;
   }
