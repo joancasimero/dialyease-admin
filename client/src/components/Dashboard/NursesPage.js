@@ -346,6 +346,7 @@ const NursesPage = () => {
                   style={{
                     width: "100%",
                     overflowX: "auto",
+                    overflowY: "visible",
                   }}
                 >
                   <Table
@@ -387,19 +388,15 @@ const NursesPage = () => {
                             background: index % 2 === 0 ? "#f8fafc" : "#ffffff",
                             transition: "all 0.2s ease",
                             verticalAlign: "middle",
-                            cursor: "pointer",
                             borderLeft: "4px solid transparent",
                           }}
-                          onClick={() => handleViewNurse(nurse)}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.background = "#f0f4ff";
                             e.currentTarget.style.borderLeft = "4px solid #4a6cf7";
-                            e.currentTarget.style.transform = "scale(1.005)";
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.background = index % 2 === 0 ? "#f8fafc" : "#ffffff";
                             e.currentTarget.style.borderLeft = "4px solid transparent";
-                            e.currentTarget.style.transform = "scale(1)";
                           }}
                         >
                           <td style={{ padding: "1.25rem 1.5rem", fontWeight: 700, color: "#4a6cf7", fontSize: "1rem", border: "none", fontFamily: "'Inter Tight', sans-serif" }}>
@@ -409,8 +406,11 @@ const NursesPage = () => {
                             <div style={{ 
                               display: "flex", 
                               alignItems: "center", 
-                              gap: "1rem" 
-                            }}>
+                              gap: "1rem",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleViewNurse(nurse)}
+                            >
                               <div
                                 style={{
                                   width: "45px",
@@ -503,8 +503,8 @@ const NursesPage = () => {
                               {nurse.shiftSchedule}
                             </div>
                           </td>
-                          <td style={{ padding: "1.25rem 1.5rem", border: "none" }} onClick={(e) => e.stopPropagation()}>
-                            <Dropdown align="end">
+                          <td style={{ padding: "1.25rem 1.5rem", border: "none", position: "relative" }}>
+                            <Dropdown align="end" drop="down">
                               <Dropdown.Toggle
                                 variant="outline-secondary"
                                 size="sm"
@@ -528,7 +528,19 @@ const NursesPage = () => {
                                   border: "1px solid #e2e8f0",
                                   padding: "0.5rem",
                                   minWidth: "180px",
-                                  zIndex: 1050,
+                                  zIndex: 9999,
+                                  position: "absolute",
+                                }}
+                                popperConfig={{
+                                  strategy: "fixed",
+                                  modifiers: [
+                                    {
+                                      name: "preventOverflow",
+                                      options: {
+                                        boundary: "viewport",
+                                      },
+                                    },
+                                  ],
                                 }}
                               >
                                 <Dropdown.Item 
