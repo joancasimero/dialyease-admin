@@ -6,7 +6,17 @@ import { useAuth } from '../../context/AuthContext';
 const AppointmentSlotTrackerPage = () => {
   const { authToken } = useAuth();
   return (
-    <div style={{
+    <>
+      <style>
+        {`
+          .custom-modal-dialog .modal-content {
+            border-radius: 20px !important;
+            border: none !important;
+            overflow: hidden !important;
+          }
+        `}
+      </style>
+      <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #f5faff 60%, #e0e7ff 100%)',
       fontFamily: "'Inter Tight', 'Inter', 'Segoe UI', sans-serif",
@@ -66,6 +76,7 @@ const AppointmentSlotTrackerPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

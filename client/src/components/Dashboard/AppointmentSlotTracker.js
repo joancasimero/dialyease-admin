@@ -1214,20 +1214,29 @@ const AppointmentSlotTracker = ({ authToken }) => {
       </Modal>
 
       {/* Slot Details Modal */}
-      <Modal show={showSlotModal} onHide={() => setShowSlotModal(false)} centered>
+      <Modal 
+        show={showSlotModal} 
+        onHide={() => setShowSlotModal(false)} 
+        centered
+        dialogClassName="custom-modal-dialog"
+      >
         <div style={{
           borderRadius: '20px',
           overflow: 'hidden',
           border: 'none',
-          fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
+          fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif',
+          boxShadow: '0 20px 60px rgba(42, 63, 157, 0.25)',
+          background: 'white'
         }}>
           <Modal.Header 
             closeButton
+            className="border-0"
             style={{
               background: 'linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%)',
               border: 'none',
               padding: '1.75rem 2rem',
-              color: 'white'
+              color: 'white',
+              borderRadius: 0
             }}
           >
             <Modal.Title style={{
@@ -1240,10 +1249,14 @@ const AppointmentSlotTracker = ({ authToken }) => {
               Slot #{activeSlot?.slotNumber} - {activeSlot?.machine?.name || 'Machine N/A'}
             </Modal.Title>
           </Modal.Header>
-          <Modal.Body style={{
-            padding: '2rem',
-            background: 'white'
-          }}>
+          <Modal.Body 
+            className="border-0"
+            style={{
+              padding: '2rem',
+              background: 'white',
+              borderRadius: 0
+            }}
+          >
             <div style={{
               display: 'grid',
               gap: '1.25rem',
