@@ -389,41 +389,26 @@ const AppointmentSlotTracker = ({ authToken }) => {
               paddingBottom: '1.5rem',
               borderBottom: '2px solid rgba(42, 63, 157, 0.15)'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div style={{
-                  width: '50px',
-                  height: '50px',
-                  borderRadius: '16px',
-                  background: 'linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '1.5rem',
-                  boxShadow: '0 8px 20px rgba(42, 63, 157, 0.3)'
+              <div>
+                <h5 style={{
+                  color: '#1e293b',
+                  fontWeight: 800,
+                  margin: 0,
+                  fontSize: '1.4rem',
+                  letterSpacing: '-0.025em',
+                  fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
                 }}>
-                  📋
-                </div>
-                <div>
-                  <h5 style={{
-                    color: '#1e293b',
-                    fontWeight: 800,
-                    margin: 0,
-                    fontSize: '1.4rem',
-                    letterSpacing: '-0.025em',
-                    fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
-                  }}>
-                    Reschedule Requests
-                  </h5>
-                  <p style={{
-                    color: '#64748b',
-                    margin: 0,
-                    fontSize: '0.9rem',
-                    fontWeight: 500,
-                    marginTop: '0.25rem'
-                  }}>
-                    Manage patient appointment changes
-                  </p>
-                </div>
+                  Reschedule Requests
+                </h5>
+                <p style={{
+                  color: '#64748b',
+                  margin: 0,
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+                  marginTop: '0.25rem'
+                }}>
+                  Manage patient appointment changes
+                </p>
               </div>
               <Button 
                 onClick={fetchRescheduleRequests} 
