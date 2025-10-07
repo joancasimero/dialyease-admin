@@ -184,7 +184,7 @@ const NursesPage = () => {
                   fontFamily: "'Inter Tight', sans-serif",
                 }}
               >
-                {showArchived ? '🗄️ Archived Nurses' : '👨‍⚕️ Nurses Management'}
+                {showArchived ? 'Archived Nurses' : 'Nurses Management'}
               </h2>
               <p
                 style={{
