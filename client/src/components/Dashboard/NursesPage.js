@@ -504,7 +504,7 @@ const NursesPage = () => {
                             </div>
                           </td>
                           <td style={{ padding: "1.25rem 1.5rem", border: "none" }} onClick={(e) => e.stopPropagation()}>
-                            <Dropdown>
+                            <Dropdown align="end">
                               <Dropdown.Toggle
                                 variant="outline-secondary"
                                 size="sm"
@@ -521,10 +521,24 @@ const NursesPage = () => {
                               >
                                 ⋮
                               </Dropdown.Toggle>
-                              <Dropdown.Menu style={{ borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", border: "1px solid #e2e8f0" }}>
+                              <Dropdown.Menu 
+                                style={{ 
+                                  borderRadius: "12px", 
+                                  boxShadow: "0 8px 24px rgba(0,0,0,0.15)", 
+                                  border: "1px solid #e2e8f0",
+                                  padding: "0.5rem",
+                                  minWidth: "180px",
+                                  zIndex: 1050,
+                                }}
+                              >
                                 <Dropdown.Item 
                                   onClick={() => handleViewNurse(nurse)}
-                                  style={{ padding: "0.75rem 1rem", fontWeight: 600 }}
+                                  style={{ 
+                                    padding: "0.75rem 1rem", 
+                                    fontWeight: 600,
+                                    borderRadius: "8px",
+                                    marginBottom: "0.25rem",
+                                  }}
                                 >
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#4a6cf7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -534,18 +548,28 @@ const NursesPage = () => {
                                 </Dropdown.Item>
                                 <Dropdown.Item 
                                   onClick={() => exportSingleNursePDF(nurse)}
-                                  style={{ padding: "0.75rem 1rem", fontWeight: 600 }}
+                                  style={{ 
+                                    padding: "0.75rem 1rem", 
+                                    fontWeight: 600,
+                                    borderRadius: "8px",
+                                    marginBottom: "0.25rem",
+                                  }}
                                 >
                                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
                                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                   </svg>
                                   Export PDF
                                 </Dropdown.Item>
-                                <Dropdown.Divider />
+                                <Dropdown.Divider style={{ margin: "0.5rem 0" }} />
                                 {showArchived ? (
                                   <Dropdown.Item 
                                     onClick={() => handleRestoreNurse(nurse._id)}
-                                    style={{ color: "#10b981", padding: "0.75rem 1rem", fontWeight: 600 }}
+                                    style={{ 
+                                      color: "#10b981", 
+                                      padding: "0.75rem 1rem", 
+                                      fontWeight: 600,
+                                      borderRadius: "8px",
+                                    }}
                                   >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
                                       <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -555,7 +579,12 @@ const NursesPage = () => {
                                 ) : (
                                   <Dropdown.Item 
                                     onClick={() => handleArchiveNurse(nurse._id)}
-                                    style={{ color: "#f59e0b", padding: "0.75rem 1rem", fontWeight: 600 }}
+                                    style={{ 
+                                      color: "#f59e0b", 
+                                      padding: "0.75rem 1rem", 
+                                      fontWeight: 600,
+                                      borderRadius: "8px",
+                                    }}
                                   >
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: "0.5rem", verticalAlign: "middle" }}>
                                       <path d="M21 8v13H3V8M1 3h22v5H1V3zm9 5v13m4-13v13" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
