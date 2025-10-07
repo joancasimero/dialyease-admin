@@ -14,9 +14,20 @@ const api = axios.create({
   timeout: 10000, // 10 second timeout
 });
 
-// Add request interceptor for debugging
+// Add request interceptor for authentication and debugging
 api.interceptors.request.use(
   (config) => {
+    // Add JWT token from localStorage
+    try {
+      const admin = JSON.parse(localStorage.getItem('admin') || '{}');
+      if (admin.token) {
+        config.headers.Authorization = `Bearer ${admin.token}`;
+        console.log('🔐 Auth token added to request');
+      }
+    } catch (e) {
+      console.log('No auth token found');
+    }
+    
     console.log('API Request:', config.method?.toUpperCase(), config.url);
     return config;
   },
