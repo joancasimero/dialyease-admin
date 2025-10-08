@@ -45,7 +45,7 @@ const otpStore = {};
 const notifiedPatients = {}; // Keeps track of sent notifications
 
 // Import SendGrid email service
-const { sendOTPEmail } = require('./utils/emailService');
+const { sendOTPEmail, sendAppointmentConfirmationEmail } = require('./utils/emailService');
 
 // Auto-seed admin user function
 async function seedAdminUser() {
@@ -685,7 +685,28 @@ app.post('/api/appointments/coming', async (req, res) => {
       { new: true }
     );
     if (!patient) return res.status(404).json({ message: 'Patient not found' });
+    
+    // Send response immediately
     res.json({ message: 'Appointment marked as coming', patient });
+    
+    // Send appointment confirmation email asynchronously (don't await)
+    if (patient.email) {
+      const patientName = `${patient.firstName} ${patient.lastName}`;
+      const appointmentDateObj = new Date(appointmentDate);
+      
+      // Determine time slot based on appointment time
+      const hours = appointmentDateObj.getHours();
+      const timeSlot = hours < 13 ? 'morning' : 'afternoon';
+      
+      sendAppointmentConfirmationEmail(patient.email, patientName, appointmentDate, timeSlot)
+        .then(() => {
+          console.log('✅ Appointment confirmation email sent to:', patient.email);
+        })
+        .catch((err) => {
+          console.error('❌ Failed to send appointment confirmation email:', err);
+          // Don't fail the request if email fails
+        });
+    }
   } catch (err) {
     console.error('Mark appointment coming error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });

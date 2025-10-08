@@ -168,6 +168,194 @@ const sendOTPEmail = async (to, otp, userType = 'patient') => {
   }
 };
 
+// Send appointment confirmation email to patient
+const sendAppointmentConfirmationEmail = async (to, patientName, appointmentDate, timeSlot) => {
+  try {
+    // Validate email configuration
+    if (!process.env.SENDGRID_API_KEY) {
+      throw new Error('SendGrid API key missing. Please set SENDGRID_API_KEY environment variable.');
+    }
+
+    if (!process.env.EMAIL_USER) {
+      throw new Error('Sender email missing. Please set EMAIL_USER environment variable.');
+    }
+
+    console.log('📧 Sending appointment confirmation email to:', to);
+    
+    // Format the date nicely
+    const formattedDate = new Date(appointmentDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
+    // Format time slot
+    const timeSlotText = timeSlot === 'morning' ? 'Morning (8:00 AM - 12:00 PM)' : 'Afternoon (1:00 PM - 5:00 PM)';
+    
+    const msg = {
+      to: to,
+      from: process.env.EMAIL_USER,
+      subject: 'Appointment Confirmation - DialyEase',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body {
+              font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+            }
+            .container {
+              background: linear-gradient(135deg, #4a6cf7 0%, #764ba2 100%);
+              padding: 40px;
+              border-radius: 20px;
+              box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+            .content {
+              background: white;
+              padding: 30px;
+              border-radius: 15px;
+            }
+            .logo {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+            .logo h1 {
+              color: #4a6cf7;
+              font-size: 32px;
+              margin: 0;
+              font-weight: 800;
+            }
+            .logo p {
+              color: #64748b;
+              margin: 5px 0;
+              font-size: 14px;
+            }
+            .confirmation-box {
+              background: linear-gradient(135deg, #4a6cf7 0%, #2a3f9d 100%);
+              color: white;
+              padding: 25px;
+              border-radius: 12px;
+              margin: 25px 0;
+              box-shadow: 0 4px 15px rgba(42, 63, 157, 0.3);
+            }
+            .confirmation-box h3 {
+              margin: 0 0 15px 0;
+              font-size: 20px;
+              text-align: center;
+            }
+            .appointment-details {
+              background: rgba(255, 255, 255, 0.1);
+              padding: 15px;
+              border-radius: 8px;
+              margin-top: 15px;
+            }
+            .appointment-details p {
+              margin: 8px 0;
+              font-size: 16px;
+            }
+            .appointment-details strong {
+              display: inline-block;
+              width: 100px;
+            }
+            .info-box {
+              background: #dbeafe;
+              border-left: 4px solid #3b82f6;
+              padding: 15px;
+              border-radius: 8px;
+              margin: 20px 0;
+              color: #1e40af;
+            }
+            .footer {
+              text-align: center;
+              margin-top: 30px;
+              color: white;
+              font-size: 14px;
+            }
+            .checkmark {
+              text-align: center;
+              font-size: 48px;
+              margin-bottom: 10px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="content">
+              <div class="logo">
+                <h1>🩺 DialyEase</h1>
+                <p>Dialysis Management System</p>
+              </div>
+              
+              <div class="checkmark">✅</div>
+              
+              <h2 style="color: #2a3f9d; margin-bottom: 15px; text-align: center;">Appointment Confirmed!</h2>
+              
+              <p>Dear ${patientName},</p>
+              
+              <p>Your dialysis appointment has been successfully confirmed. Please find your appointment details below:</p>
+              
+              <div class="confirmation-box">
+                <h3>📅 Appointment Details</h3>
+                <div class="appointment-details">
+                  <p><strong>Date:</strong> ${formattedDate}</p>
+                  <p><strong>Time:</strong> ${timeSlotText}</p>
+                  <p><strong>Status:</strong> Confirmed ✓</p>
+                </div>
+              </div>
+              
+              <div class="info-box">
+                <strong>📌 Important Reminders:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                  <li>Please arrive 15 minutes before your scheduled time</li>
+                  <li>Bring your identification card and medical records</li>
+                  <li>Follow pre-dialysis dietary restrictions</li>
+                  <li>If you need to reschedule, please contact us as soon as possible</li>
+                </ul>
+              </div>
+              
+              <p style="color: #64748b; font-size: 14px; margin-top: 20px;">
+                If you have any questions or need to make changes to your appointment, please contact the dialysis center immediately.
+              </p>
+              
+              <p style="margin-top: 20px;">
+                <strong>Stay healthy and see you soon!</strong><br>
+                The DialyEase Team
+              </p>
+            </div>
+            
+            <div class="footer">
+              <p>© ${new Date().getFullYear()} DialyEase - Dialysis Management System</p>
+              <p>This is an automated message, please do not reply.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    };
+    
+    console.log('📧 Sending appointment confirmation email via SendGrid...');
+    const response = await sgMail.send(msg);
+    console.log('✅ Appointment confirmation email sent successfully');
+    console.log('✅ Response status:', response[0].statusCode);
+    return { success: true, messageId: response[0].headers['x-message-id'] };
+  } catch (error) {
+    console.error('❌ Error sending appointment confirmation email:', error);
+    console.error('❌ Error details:', {
+      code: error.code,
+      message: error.message,
+      response: error.response?.body
+    });
+    throw error;
+  }
+};
+
 module.exports = {
-  sendOTPEmail
+  sendOTPEmail,
+  sendAppointmentConfirmationEmail
 };
