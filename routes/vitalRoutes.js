@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Vital = require('../models/Vital');
+const Patient = require('../models/Patient');
 const { protect } = require('../middlewares/authMiddleware');
 const admin = require('firebase-admin'); // Already initialized in server.js
+const { sendHealthStatusNotification } = require('../utils/notificationService');
 
 router.post('/', protect, async (req, res) => {
   try {
@@ -95,6 +97,36 @@ router.post('/', protect, async (req, res) => {
       // Continue even if Firestore sync fails
     }
 
+    // Evaluate health status and send push notification
+    try {
+      const patient = await Patient.findById(req.body.patient);
+      if (patient && patient.deviceToken) {
+        console.log('📊 Evaluating health status for notification...');
+        
+        // Evaluate health status based on vitals
+        const healthStatus = evaluateHealthStatus(req.body);
+        console.log('🏥 Health status:', healthStatus);
+        
+        // Extract vital data summary for notification
+        const monitoring = req.body.intraHdMonitoring || [];
+        const vitalData = {
+          bloodPressure: monitoring.length > 0 ? monitoring[monitoring.length - 1].bloodPressure : 'N/A',
+          heartRate: monitoring.length > 0 ? monitoring[monitoring.length - 1].heartRate : 'N/A',
+          fluidRemoved: monitoring.length > 0 ? monitoring[monitoring.length - 1].ufRemove : 'N/A',
+          sessionDate: new Date(req.body.appointmentDate).toISOString().split('T')[0]
+        };
+        
+        // Send health status notification
+        const notificationResult = await sendHealthStatusNotification(patient, healthStatus, vitalData);
+        console.log('📱 Push notification result:', notificationResult);
+      } else {
+        console.log('⚠️ Patient not found or no device token, skipping notification');
+      }
+    } catch (notifErr) {
+      console.error('❌ Error sending health status notification:', notifErr);
+      // Don't fail the request if notification fails
+    }
+
     res.status(isUpdate ? 200 : 201).json({ 
       success: true, 
       vital,
@@ -104,6 +136,72 @@ router.post('/', protect, async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
+// Helper function to evaluate health status from vitals
+function evaluateHealthStatus(vitalData) {
+  let riskScore = 0;
+  
+  // Check intra-HD monitoring for critical values
+  const monitoring = vitalData.intraHdMonitoring || [];
+  if (monitoring.length > 0) {
+    const lastReading = monitoring[monitoring.length - 1];
+    
+    // Blood pressure assessment
+    if (lastReading.bloodPressure) {
+      const bpParts = lastReading.bloodPressure.split('/');
+      if (bpParts.length === 2) {
+        const systolic = parseInt(bpParts[0]);
+        const diastolic = parseInt(bpParts[1]);
+        
+        if (systolic >= 180 || diastolic >= 110 || systolic < 90 || diastolic < 60) {
+          riskScore += 3; // Critical BP
+        } else if (systolic >= 140 || diastolic >= 90) {
+          riskScore += 1; // Elevated BP
+        }
+      }
+    }
+    
+    // Heart rate assessment
+    if (lastReading.heartRate) {
+      const hr = parseInt(lastReading.heartRate);
+      if (hr > 120 || hr < 50) {
+        riskScore += 2; // Severe tachycardia or bradycardia
+      } else if (hr > 100 || hr < 60) {
+        riskScore += 1; // Mild tachycardia or low normal
+      }
+    }
+    
+    // Fluid removal assessment
+    if (lastReading.ufRemove) {
+      const fluidRemoved = parseFloat(lastReading.ufRemove);
+      if (!isNaN(fluidRemoved)) {
+        // Convert to liters if in mL
+        const liters = fluidRemoved > 100 ? fluidRemoved / 1000 : fluidRemoved;
+        if (liters > 4.0) {
+          riskScore += 2; // Excessive fluid removal
+        }
+      }
+    }
+  }
+  
+  // Check for edema
+  if (vitalData.preHd?.edemaBipedal === true) {
+    riskScore += 1;
+  }
+  
+  // Determine health status based on risk score
+  if (riskScore >= 6) {
+    return 'critical';
+  } else if (riskScore >= 4) {
+    return 'poor';
+  } else if (riskScore >= 2) {
+    return 'fair';
+  } else if (riskScore === 1) {
+    return 'good';
+  } else {
+    return 'excellent';
+  }
+}
 
 
 

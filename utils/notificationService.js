@@ -294,6 +294,130 @@ const sendAccountRejectionNotification = async (patient, reason = '') => {
   }
 };
 
+/**
+ * Send health status notification after vital signs are submitted
+ */
+const sendHealthStatusNotification = async (patient, healthStatus, vitalData = {}) => {
+  try {
+    if (!admin.apps || admin.apps.length === 0) {
+      console.warn('⚠️ Firebase not initialized. Push notification skipped.');
+      return { success: false, reason: 'Firebase not initialized' };
+    }
+
+    if (!patient.deviceToken) {
+      console.warn('⚠️ No device token for patient:', patient.firstName);
+      return { success: false, reason: 'No device token' };
+    }
+
+    console.log('📱 Sending health status notification to:', patient.firstName, patient.lastName);
+    console.log('🏥 Health Status:', healthStatus);
+
+    // Determine notification content based on health status
+    let title, body, emoji;
+    
+    switch (healthStatus.toLowerCase()) {
+      case 'excellent':
+        emoji = '🌟';
+        title = '🌟 Excellent Session!';
+        body = 'All vitals are looking great! Keep up the excellent work.';
+        break;
+      case 'good':
+        emoji = '😊';
+        title = '😊 Good Session';
+        body = 'Your session went well. Most vitals are in good range.';
+        break;
+      case 'fair':
+        emoji = '😐';
+        title = '😐 Session Complete';
+        body = 'Some vitals need attention. Please review your results in the app.';
+        break;
+      case 'poor':
+        emoji = '⚠️';
+        title = '⚠️ Attention Needed';
+        body = 'Your vitals show some concerns. Please consult with your care team.';
+        break;
+      case 'critical':
+        emoji = '🚨';
+        title = '🚨 Urgent: Review Required';
+        body = 'Critical values detected. Please contact your healthcare provider immediately.';
+        break;
+      default:
+        emoji = '📋';
+        title = '📋 Session Complete';
+        body = 'Your dialysis session is complete. Check your vitals in the app.';
+    }
+
+    const message = {
+      notification: {
+        title,
+        body
+      },
+      data: {
+        type: 'health_status',
+        patientId: patient._id.toString(),
+        patientName: `${patient.firstName} ${patient.lastName}`,
+        healthStatus: healthStatus,
+        screen: 'vitals',
+        emoji: emoji,
+        timestamp: new Date().toISOString(),
+        clickAction: 'FLUTTER_NOTIFICATION_CLICK',
+        // Include vital summary data
+        bloodPressure: vitalData.bloodPressure || 'N/A',
+        heartRate: vitalData.heartRate || 'N/A',
+        fluidRemoved: vitalData.fluidRemoved || 'N/A',
+        sessionDate: vitalData.sessionDate || new Date().toISOString().split('T')[0]
+      },
+      token: patient.deviceToken,
+      android: {
+        notification: {
+          sound: 'default',
+          priority: 'high',
+          channelId: 'dialyease_health_status',
+          color: '#4CAF50'
+        }
+      },
+      apns: {
+        payload: {
+          aps: {
+            sound: 'default',
+            badge: 1,
+            category: 'HEALTH_STATUS'
+          }
+        }
+      }
+    };
+
+    const response = await admin.messaging().send(message);
+    console.log('✅ Health status notification sent to', patient.firstName, patient.lastName);
+    console.log('Response:', response);
+    
+    return { 
+      success: true, 
+      messageId: response,
+      healthStatus: healthStatus,
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('❌ Error sending health status notification:', error);
+    
+    if (error.code === 'messaging/invalid-registration-token' ||
+        error.code === 'messaging/registration-token-not-registered') {
+      console.warn('⚠️ Invalid or expired device token for patient:', patient.firstName);
+      return { 
+        success: false, 
+        reason: 'Invalid device token',
+        shouldRemoveToken: true 
+      };
+    }
+    
+    return { 
+      success: false, 
+      reason: error.message,
+      error: error.code 
+    };
+  }
+};
+
 module.exports = {
   sendPushNotification,
   sendAccountApprovalNotification,
@@ -301,5 +425,6 @@ module.exports = {
   sendRescheduleApprovalNotification,
   sendRescheduleDenialNotification,
   sendGeneralNotification,
-  sendAccountRejectionNotification
+  sendAccountRejectionNotification,
+  sendHealthStatusNotification
 };
