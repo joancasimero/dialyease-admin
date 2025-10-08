@@ -1089,7 +1089,7 @@ function getPhilippineDateStr() {
                     letterSpacing: '-0.05em',
                     fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
                   }}>
-                    {todayBookedAppointments.length}
+                    {todayAppointments.length}
                   </div>
                   <div style={{
                     fontSize: '0.85rem',
@@ -1098,7 +1098,7 @@ function getPhilippineDateStr() {
                     letterSpacing: '-0.025em',
                     fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
                   }}>
-                    Today's Appointments
+                    Today's Patients
                   </div>
                 </div>
               </div>
@@ -1157,7 +1157,7 @@ function getPhilippineDateStr() {
                     letterSpacing: '-0.05em',
                     fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
                   }}>
-                    {patients.length}
+                    {patients.filter(p => !p.archived).length}
                   </div>
                   <div style={{
                     fontSize: '0.85rem',
@@ -1166,7 +1166,7 @@ function getPhilippineDateStr() {
                     letterSpacing: '-0.025em',
                     fontFamily: 'Inter Tight, Inter, Segoe UI, sans-serif'
                   }}>
-                    Registered Patients
+                    Total Registered Patients
                   </div>
                 </div>
               </div>
