@@ -311,14 +311,37 @@ const PatientsPage = () => {
   };
 
   return (
-    <div
-      style={{
-        background: "linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%)",
-        minHeight: "100vh",
-        padding: "2.5rem 1.5rem",
-        fontFamily: "'Inter Tight', 'Inter', 'Segoe UI', sans-serif",
-      }}
-    >
+    <>
+      <style>
+        {`
+          .modern-modal .modal-content {
+            border-radius: 20px !important;
+            border: none !important;
+            overflow: hidden !important;
+          }
+          .modern-modal .modal-header {
+            border: none !important;
+          }
+          .modern-modal .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+          }
+          .modern-modal .modal-header .btn-close:hover {
+            opacity: 1;
+          }
+          .modern-modal .modal-body {
+            border: none !important;
+          }
+        `}
+      </style>
+      <div
+        style={{
+          background: "linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%)",
+          minHeight: "100vh",
+          padding: "2.5rem 1.5rem",
+          fontFamily: "'Inter Tight', 'Inter', 'Segoe UI', sans-serif",
+        }}
+      >
       <div style={{ marginLeft: 240 }}>
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
           {/* Header Section */}
@@ -1070,31 +1093,38 @@ const PatientsPage = () => {
           onHide={() => setShowEditModal(false)}
           size="lg"
           centered
+          dialogClassName="modern-modal"
         >
-          <Modal.Header
-            closeButton
-            style={{
-              background: "linear-gradient(90deg, #263a99 60%, #4a6cf7 100%)",
-              color: "#fff",
-              borderTopLeftRadius: "1rem",
-              borderTopRightRadius: "1rem",
-              borderBottom: "none",
-              boxShadow: "0 2px 8px rgba(42,63,157,0.07)",
-            }}
-          >
-            <Modal.Title style={{ fontWeight: 700, fontSize: "1.4rem", color: "#fff" }}>
-              Edit Patient Information
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body
-            style={{
-              background: "#f7faff",
-              borderBottomLeftRadius: "1rem",
-              borderBottomRightRadius: "1rem",
-              padding: "2rem 2.5rem",
-              boxShadow: "0 2px 8px rgba(42,63,157,0.04)",
-            }}
-          >
+          <div style={{
+            borderRadius: "20px",
+            overflow: "hidden",
+            border: "none",
+          }}>
+            <Modal.Header
+              closeButton
+              style={{
+                background: "linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%)",
+                color: "#fff",
+                border: "none",
+                padding: "1.5rem 2rem",
+              }}
+            >
+              <Modal.Title style={{ 
+                fontWeight: 800, 
+                fontSize: "1.5rem", 
+                color: "#fff",
+                fontFamily: "'Inter Tight', sans-serif"
+              }}>
+                Edit Patient Information
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body
+              style={{
+                background: "#f8fafc",
+                padding: "2rem",
+                border: "none",
+              }}
+            >
             {editPatient && (
               <Form onSubmit={handleEditSubmit}>
                 <Row>
@@ -1548,6 +1578,7 @@ const PatientsPage = () => {
               </Form>
             )}
           </Modal.Body>
+          </div>
         </Modal>
 
         {/* Archive Modal */}
@@ -2355,7 +2386,8 @@ const PatientsPage = () => {
         )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
