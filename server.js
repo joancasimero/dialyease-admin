@@ -675,6 +675,8 @@ app.use('/api/attendance', attendanceRoutes);
 
 app.post('/api/appointments/coming', async (req, res) => {
   const { userId, appointmentDate } = req.body;
+  console.log('📅 Appointment confirmation request - userId:', userId, 'appointmentDate:', appointmentDate);
+  
   if (!userId || !appointmentDate) {
     return res.status(400).json({ message: 'userId and appointmentDate are required' });
   }
@@ -685,6 +687,9 @@ app.post('/api/appointments/coming', async (req, res) => {
       { new: true }
     );
     if (!patient) return res.status(404).json({ message: 'Patient not found' });
+    
+    console.log('✅ Patient found:', patient.firstName, patient.lastName);
+    console.log('📧 Patient email:', patient.email);
     
     // Send response immediately
     res.json({ message: 'Appointment marked as coming', patient });
@@ -698,14 +703,23 @@ app.post('/api/appointments/coming', async (req, res) => {
       const hours = appointmentDateObj.getHours();
       const timeSlot = hours < 13 ? 'morning' : 'afternoon';
       
+      console.log('📧 Attempting to send confirmation email...');
+      console.log('   - To:', patient.email);
+      console.log('   - Patient name:', patientName);
+      console.log('   - Appointment date:', appointmentDate);
+      console.log('   - Time slot:', timeSlot);
+      
       sendAppointmentConfirmationEmail(patient.email, patientName, appointmentDate, timeSlot)
         .then(() => {
-          console.log('✅ Appointment confirmation email sent to:', patient.email);
+          console.log('✅ Appointment confirmation email sent successfully to:', patient.email);
         })
         .catch((err) => {
           console.error('❌ Failed to send appointment confirmation email:', err);
+          console.error('❌ Error message:', err.message);
           // Don't fail the request if email fails
         });
+    } else {
+      console.log('⚠️ Patient email is missing - cannot send confirmation email');
     }
   } catch (err) {
     console.error('Mark appointment coming error:', err);
