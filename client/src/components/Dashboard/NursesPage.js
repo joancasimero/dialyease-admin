@@ -156,7 +156,7 @@ const NursesPage = () => {
         fontFamily: "'Inter Tight', 'Inter', 'Segoe UI', sans-serif",
       }}
     >
-      <div style={{ marginLeft: 240 }}>
+      <div style={{ marginLeft: 320 }}>
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
           {/* Header Section */}
           <div
