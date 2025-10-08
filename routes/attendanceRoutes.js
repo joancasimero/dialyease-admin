@@ -4,6 +4,7 @@ const Attendance = require('../models/Attendance');
 const Patient = require('../models/Patient');
 const AppointmentSlot = require('../models/AppointmentSlot'); // Import AppointmentSlot model
 const { protect } = require('../middlewares/authMiddleware');
+const moment = require('moment-timezone'); // Add moment-timezone
 
 // Import the Socket.IO instance
 let io;
@@ -13,16 +14,12 @@ const setSocketIO = (socketInstance) => {
 
 // Helper function to get Philippines date string
 const getPhilippineDateStr = () => {
-  const now = new Date();
-  const phTime = new Date(now.getTime() + (8 * 60 - now.getTimezoneOffset()) * 60000);
-  return phTime.toISOString().split('T')[0];
+  return moment().tz('Asia/Manila').format('YYYY-MM-DD');
 };
 
-// Helper function to get Philippines time string
+// Helper function to get Philippines time string in HH:mm format
 const getPhilippineTimeStr = () => {
-  const now = new Date();
-  const phTime = new Date(now.getTime() + (8 * 60 - now.getTimezoneOffset()) * 60000);
-  return phTime.toLocaleTimeString('en-US', { hour12: false }).slice(0, 5);
+  return moment().tz('Asia/Manila').format('HH:mm');
 };
 
 router.post('/mark', protect, async (req, res) => {
