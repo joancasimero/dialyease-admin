@@ -8,11 +8,12 @@
 }
 
 .admin-management-container {
-  max-width: 1400px;
+  max-width: calc(100vw - 300px);
   width: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 1.5rem;
   margin-left: 280px;
+  margin-right: 20px;
   box-sizing: border-box;
 }
 
@@ -73,29 +74,29 @@
 
 .admin-form,
 .modern-admin-form {
-  padding: 2rem;
+  padding: 1.5rem;
   background: transparent;
 }
 
 .modern-admin-form {
-  padding: 2.5rem 2rem;
+  padding: 2rem 1.5rem;
 }
 
 .admin-section-header {
   background: linear-gradient(135deg, #2a3f9d 0%, #4a6cf7 100%);
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 800;
-  padding: 1rem 1.5rem;
-  margin: 0 -2rem 2rem -2rem;
+  padding: 0.85rem 1.25rem;
+  margin: 0 -1.5rem 1.5rem -1.5rem;
   letter-spacing: 0.025em;
   text-transform: uppercase;
 }
 
 .admin-form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem 2rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.2rem 1.5rem;
   margin-bottom: 2rem;
 }
 
@@ -106,17 +107,17 @@
 .admin-form-label {
   font-weight: 600;
   color: #374151;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
   display: block;
 }
 
 .admin-form-input {
   width: 100%;
   border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.95rem;
   background: #fff;
   transition: all 0.2s;
   font-family: 'Inter Tight', 'Inter', 'Segoe UI', sans-serif;
@@ -402,23 +403,25 @@
 @media (max-width: 1400px) {
   .admin-management-container {
     margin-left: 260px;
-    padding: 2rem 1.5rem;
+    margin-right: 15px;
+    padding: 1.5rem 1.25rem;
   }
   
   .admin-form-grid {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.2rem 1.5rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem 1.25rem;
   }
 }
 
 @media (max-width: 1200px) {
   .admin-management-container {
     margin-left: 260px;
-    padding: 2rem 1.5rem;
+    margin-right: 10px;
+    padding: 1.5rem 1rem;
   }
   
   .admin-form-grid {
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem 1.2rem;
   }
 }
@@ -562,8 +565,13 @@
 
 @media (min-width: 1600px) {
   .admin-management-container {
-    max-width: 1400px;
+    max-width: calc(100vw - 320px);
     margin-left: 280px;
-    margin-right: auto;
+    margin-right: 40px;
+  }
+  
+  .admin-form-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem 1.5rem;
   }
 }
