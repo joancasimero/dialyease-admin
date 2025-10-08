@@ -45,7 +45,7 @@ const otpStore = {};
 const notifiedPatients = {}; // Keeps track of sent notifications
 
 // Import SendGrid email service
-const { sendOTPEmail } = require('./emailService');
+const { sendOTPEmail } = require('./utils/emailService');
 
 // Auto-seed admin user function
 async function seedAdminUser() {
