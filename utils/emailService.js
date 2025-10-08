@@ -5,8 +5,8 @@ if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
 
-// Send OTP email using SendGrid
-const sendOTPEmail = async (to, otp) => {
+// Send OTP email using SendGrid - Generic function for all user types
+const sendOTPEmail = async (to, otp, userType = 'patient') => {
   try {
     // Validate email configuration
     if (!process.env.SENDGRID_API_KEY) {
@@ -19,11 +19,30 @@ const sendOTPEmail = async (to, otp) => {
 
     console.log('📧 Attempting to send email to:', to);
     console.log('📧 Using SendGrid with sender:', process.env.EMAIL_USER);
+    console.log('📧 User type:', userType);
+    
+    // Customize subject and portal name based on user type
+    let portalName = 'DialyEase';
+    let primaryColor = '#4a6cf7';
+    let gradientStart = '#4a6cf7';
+    let gradientEnd = '#2a3f9d';
+    
+    if (userType === 'admin') {
+      portalName = 'DialyEase Admin Portal';
+      primaryColor = '#273A99';
+      gradientStart = '#273A99';
+      gradientEnd = '#1a2570';
+    } else if (userType === 'nurse') {
+      portalName = 'DialyEase Nurse Portal';
+      primaryColor = '#263A99';
+      gradientStart = '#263A99';
+      gradientEnd = '#1a2570';
+    }
     
     const msg = {
       to: to,
       from: process.env.EMAIL_USER, // Must be verified in SendGrid
-      subject: 'Password Reset OTP - DialyEase Admin',
+      subject: `Password Reset OTP - ${portalName}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -38,7 +57,7 @@ const sendOTPEmail = async (to, otp) => {
               padding: 20px;
             }
             .container {
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+              background: linear-gradient(135deg, ${gradientStart} 0%, #764ba2 100%);
               padding: 40px;
               border-radius: 20px;
               box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -53,13 +72,18 @@ const sendOTPEmail = async (to, otp) => {
               margin-bottom: 30px;
             }
             .logo h1 {
-              color: #4a6cf7;
+              color: ${primaryColor};
               font-size: 32px;
               margin: 0;
               font-weight: 800;
             }
+            .logo p {
+              color: #64748b;
+              margin: 5px 0;
+              font-size: 14px;
+            }
             .otp-box {
-              background: linear-gradient(135deg, #4a6cf7 0%, #2a3f9d 100%);
+              background: linear-gradient(135deg, ${gradientStart} 0%, ${gradientEnd} 100%);
               color: white;
               padding: 20px;
               border-radius: 12px;
@@ -96,21 +120,21 @@ const sendOTPEmail = async (to, otp) => {
             <div class="content">
               <div class="logo">
                 <h1>🩺 DialyEase</h1>
-                <p style="color: #64748b; margin: 5px 0;">Admin Portal</p>
+                <p>${portalName}</p>
               </div>
               
-              <h2 style="color: #2a3f9d; margin-bottom: 15px;">Password Reset Request</h2>
+              <h2 style="color: ${gradientEnd}; margin-bottom: 15px;">Password Reset Request</h2>
               
               <p>Hello,</p>
               
-              <p>We received a request to reset your password for your DialyEase Admin account. Use the OTP code below to complete the password reset process:</p>
+              <p>We received a request to reset your password for your ${portalName} account. Use the OTP code below to complete the password reset process:</p>
               
               <div class="otp-box">
                 ${otp}
               </div>
               
               <div class="warning">
-                <strong>⚠️ Important:</strong> This OTP will expire in <strong>10 minutes</strong>. If you didn't request this password reset, please ignore this email or contact your system administrator.
+                <strong>⚠️ Important:</strong> This OTP will expire in <strong>15 minutes</strong>. If you didn't request this password reset, please ignore this email or contact your system administrator.
               </div>
               
               <p style="color: #64748b; font-size: 14px; margin-top: 20px;">

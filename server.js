@@ -44,6 +44,9 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 const otpStore = {};
 const notifiedPatients = {}; // Keeps track of sent notifications
 
+// Import SendGrid email service
+const { sendOTPEmail } = require('./emailService');
+
 // Auto-seed admin user function
 async function seedAdminUser() {
   try {
@@ -467,48 +470,19 @@ app.post('/api/auth/forgot-password', async (req, res) => {
     otpStore[email] = { otp, expiresAt: Date.now() + 15 * 60 * 1000 };
     console.log('✅ OTP generated for:', email);
 
-    // Send response immediately, then send email in background
+    // Send response immediately, then send email in background using SendGrid
     res.json({ message: 'OTP sent to email' });
     console.log('✅ Response sent to client');
 
-    // Send email asynchronously (don't await)
-    transporter.sendMail({
-      from: `"DialyEase Support" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Your OTP Code - DialyEase',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://drive.google.com/uc?export=view&id=12NssR4VbFJLHRQ_-_9aSLS_LVdEqW-P8" alt="DialyEase Logo" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #007bff; margin-bottom: 15px;">
-            <h1 style="color: #007bff; margin: 0;">DialyEase</h1>
-          </div>
-          
-          <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
-            <p style="color: #666; font-size: 16px;">Hello ${patient.firstName || 'Patient'},</p>
-            <p style="color: #666; font-size: 16px;">We received a request to reset your password. Use the OTP code below:</p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <div style="background-color: #007bff; color: white; font-size: 32px; font-weight: bold; padding: 20px; border-radius: 8px; letter-spacing: 3px;">
-                ${otp}
-              </div>
-            </div>
-            
-            <p style="color: #666; font-size: 14px; text-align: center;">This code expires in 15 minutes.</p>
-            <p style="color: #666; font-size: 14px; text-align: center;">If you didn't request this, please ignore this email.</p>
-          </div>
-          
-          <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-            <p>© 2024 DialyEase. All rights reserved.</p>
-          </div>
-        </div>
-      `,
-    }).then(() => {
-      console.log('✅ Email sent successfully to:', email);
-    }).catch((err) => {
-      console.error('❌ Email sending failed:', err);
-      // Don't fail the request if email fails - OTP is already stored
-    });
+    // Send email asynchronously using SendGrid (don't await)
+    sendOTPEmail(email, otp, 'patient')
+      .then(() => {
+        console.log('✅ Email sent successfully via SendGrid to:', email);
+      })
+      .catch((err) => {
+        console.error('❌ SendGrid email sending failed:', err);
+        // Don't fail the request if email fails - OTP is already stored
+      });
 
   } catch (err) {
     console.error('❌ Forgot password error:', err);
@@ -603,48 +577,19 @@ app.post('/api/nurses/forgot-password', async (req, res) => {
     otpStore[email] = { otp, expiresAt: Date.now() + 15 * 60 * 1000 };
     console.log('✅ OTP generated for nurse:', email);
 
-    // Send response immediately, then send email in background
+    // Send response immediately, then send email in background using SendGrid
     res.json({ message: 'OTP sent to email' });
     console.log('✅ Response sent to client');
 
-    // Send email asynchronously (don't await)
-    transporter.sendMail({
-      from: `"DialyEase Support" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Your OTP Code - DialyEase Nurse Portal',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://drive.google.com/uc?export=view&id=12NssR4VbFJLHRQ_-_9aSLS_LVdEqW-P8" alt="DialyEase Logo" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #263A99; margin-bottom: 15px;">
-            <h1 style="color: #263A99; margin: 0;">DialyEase Nurse Portal</h1>
-          </div>
-          
-          <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h2 style="color: #333; text-align: center;">Password Reset Request</h2>
-            <p style="color: #666; font-size: 16px;">Hello ${nurse.firstName || 'Nurse'},</p>
-            <p style="color: #666; font-size: 16px;">We received a request to reset your password. Use the OTP code below:</p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <div style="background-color: #263A99; color: white; font-size: 32px; font-weight: bold; padding: 20px; border-radius: 8px; letter-spacing: 3px;">
-                ${otp}
-              </div>
-            </div>
-            
-            <p style="color: #666; font-size: 14px; text-align: center;">This code expires in 15 minutes.</p>
-            <p style="color: #666; font-size: 14px; text-align: center;">If you didn't request this, please ignore this email.</p>
-          </div>
-          
-          <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-            <p>© 2024 DialyEase. All rights reserved.</p>
-          </div>
-        </div>
-      `,
-    }).then(() => {
-      console.log('✅ Email sent successfully to nurse:', email);
-    }).catch((err) => {
-      console.error('❌ Nurse email sending failed:', err);
-      // Don't fail the request if email fails - OTP is already stored
-    });
+    // Send email asynchronously using SendGrid (don't await)
+    sendOTPEmail(email, otp, 'nurse')
+      .then(() => {
+        console.log('✅ Email sent successfully via SendGrid to nurse:', email);
+      })
+      .catch((err) => {
+        console.error('❌ SendGrid nurse email sending failed:', err);
+        // Don't fail the request if email fails - OTP is already stored
+      });
 
   } catch (err) {
     console.error('❌ Nurse forgot password error:', err);
@@ -1291,50 +1236,31 @@ module.exports.io = io;
 // 1. Request OTP for admin
 app.post('/api/admin/forgot-password', async (req, res) => {
   const { email } = req.body;
+  console.log('📧 Admin forgot password request received for:', email);
+  
   const admin = await Admin.findOne({ email });
-  if (!admin) return res.status(400).json({ message: 'Admin not found' });
+  if (!admin) {
+    console.log('❌ Admin not found:', email);
+    return res.status(400).json({ message: 'Admin not found' });
+  }
 
   const otp = generateOTP();
   otpStore[email] = { otp, expiresAt: Date.now() + 15 * 60 * 1000 };
+  console.log('✅ OTP generated for admin:', email);
 
-  try {
-    await transporter.sendMail({
-      from: `"DialyEase Support" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Your DialyEase Admin OTP Code',
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; padding: 20px; border-radius: 10px;">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <img src="https://drive.google.com/uc?export=view&id=12NssR4VbFJLHRQ_-_9aSLS_LVdEqW-P8" alt="DialyEase Logo" style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid #273A99; margin-bottom: 15px;">
-            <h1 style="color: #273A99; margin: 0;">DialyEase Admin Portal</h1>
-          </div>
-          
-          <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h2 style="color: #333; text-align: center;">Admin Password Reset</h2>
-            <p style="color: #666; font-size: 16px;">Hello Administrator,</p>
-            <p style="color: #666; font-size: 16px;">A password reset was requested for your admin account. Use the OTP code below:</p>
-            
-            <div style="text-align: center; margin: 30px 0;">
-              <div style="background-color: #273A99; color: white; font-size: 32px; font-weight: bold; padding: 20px; border-radius: 8px; letter-spacing: 3px;">
-                ${otp}
-              </div>
-            </div>
-            
-            <p style="color: #666; font-size: 14px; text-align: center;">This code expires in 15 minutes.</p>
-            <p style="color: #666; font-size: 14px; text-align: center;">If you didn't request this, please contact the system administrator immediately.</p>
-          </div>
-          
-          <div style="text-align: center; margin-top: 20px; color: #999; font-size: 12px;">
-            <p>© 2024 DialyEase. All rights reserved.</p>
-          </div>
-        </div>
-      `,
+  // Send response immediately, then send email in background using SendGrid
+  res.json({ message: 'OTP sent to email' });
+  console.log('✅ Response sent to client');
+
+  // Send email asynchronously using SendGrid (don't await)
+  sendOTPEmail(email, otp, 'admin')
+    .then(() => {
+      console.log('✅ Email sent successfully via SendGrid to admin:', email);
+    })
+    .catch((err) => {
+      console.error('❌ SendGrid admin email sending failed:', err);
+      // Don't fail the request if email fails - OTP is already stored
     });
-    res.json({ message: 'OTP sent to email' });
-  } catch (err) {
-    console.error('Admin OTP email failed:', err);
-    res.status(500).json({ message: 'Failed to send email' });
-  }
 });
 
 // 2. Verify OTP for admin
