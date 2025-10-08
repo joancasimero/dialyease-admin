@@ -298,7 +298,7 @@ const ApprovalPage = () => {
     return (
       <div
         style={{
-          marginLeft: 240,
+          marginLeft: 320,
           padding: '2.5rem 1.5rem',
           background: 'linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%)',
           minHeight: '100vh',
@@ -321,7 +321,7 @@ const ApprovalPage = () => {
   return (
     <div
       style={{
-        marginLeft: 240,
+        marginLeft: 320,
         padding: '2.5rem 1.5rem',
         background: 'linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%)',
         minHeight: '100vh',
