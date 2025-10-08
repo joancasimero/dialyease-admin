@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 import {
   Table,
   Form,
@@ -13,6 +14,7 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const PatientsPage = () => {
+  const { isSuperAdmin } = useAuth();
   const [patients, setPatients] = useState([]);
   const [archivedPatients, setArchivedPatients] = useState([]); 
   const [showArchived, setShowArchived] = useState(false); 
@@ -29,6 +31,11 @@ const PatientsPage = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportSchedule, setExportSchedule] = useState(""); 
   const [showArchivedModal, setShowArchivedModal] = useState(false); 
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [passwordChangePatient, setPasswordChangePatient] = useState(null);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(""); 
 
   useEffect(() => {
     fetchPatients();
@@ -229,6 +236,49 @@ const PatientsPage = () => {
     let list = showArchived ? archivedPatients : filteredPatients;
     if (exportSchedule) list = list.filter(p => p.dialysisSchedule === exportSchedule);
     return list;
+  };
+
+  const handleChangePasswordClick = (patient) => {
+    setPasswordChangePatient(patient);
+    setNewPassword("");
+    setConfirmPassword("");
+    setPasswordError("");
+    setShowChangePasswordModal(true);
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    setPasswordError("");
+
+    // Validation
+    if (newPassword.length < 6) {
+      setPasswordError("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await api.put(
+        `/patients/${passwordChangePatient._id}/change-password`,
+        { newPassword }
+      );
+
+      if (response.data.success) {
+        alert(`Password successfully changed for ${passwordChangePatient.firstName} ${passwordChangePatient.lastName}`);
+        setShowChangePasswordModal(false);
+        setPasswordChangePatient(null);
+        setNewPassword("");
+        setConfirmPassword("");
+      }
+    } catch (error) {
+      setPasswordError(
+        error.response?.data?.message || "Failed to change password. Please try again."
+      );
+    }
   };
 
   return (
@@ -1644,6 +1694,42 @@ const PatientsPage = () => {
                         </svg>
                         Edit
                       </Button>
+                      {isSuperAdmin && (
+                        <Button
+                          style={{
+                            borderRadius: "10px",
+                            fontWeight: 700,
+                            fontSize: "0.9rem",
+                            background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+                            border: "none",
+                            color: "#fff",
+                            boxShadow: "0 4px 12px rgba(139, 92, 246, 0.2)",
+                            transition: "all 0.2s ease",
+                            padding: "0.75rem 1.25rem",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                          }}
+                          onClick={() => {
+                            setShowViewModal(false);
+                            handleChangePasswordClick(viewPatient);
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "translateY(-2px)";
+                            e.currentTarget.style.boxShadow = "0 6px 16px rgba(139, 92, 246, 0.3)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "translateY(0)";
+                            e.currentTarget.style.boxShadow = "0 4px 12px rgba(139, 92, 246, 0.2)";
+                          }}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M7 11V7a5 5 0 0110 0v4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                          Change Password
+                        </Button>
+                      )}
                       <Button
                         style={{
                           borderRadius: "10px",
@@ -1754,6 +1840,275 @@ const PatientsPage = () => {
             </Button>
           </Modal.Footer>
         </Modal>
+
+        {/* Change Password Modal - Super Admin Only */}
+        {isSuperAdmin && (
+          <Modal 
+            show={showChangePasswordModal} 
+            onHide={() => {
+              setShowChangePasswordModal(false);
+              setPasswordChangePatient(null);
+              setNewPassword("");
+              setConfirmPassword("");
+              setPasswordError("");
+            }} 
+            centered
+          >
+            <Modal.Header 
+              closeButton
+              style={{
+                background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+                color: "#fff",
+                borderBottom: "none",
+                padding: "1.5rem 2rem",
+              }}
+            >
+              <Modal.Title style={{ 
+                fontWeight: 800, 
+                fontSize: "1.4rem", 
+                color: "#fff",
+                fontFamily: "'Inter Tight', sans-serif",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem"
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Change Patient Password
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body
+              style={{
+                background: "#f8fafc",
+                padding: "2rem",
+              }}
+            >
+              {passwordChangePatient && (
+                <>
+                  <div style={{
+                    background: "linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%)",
+                    padding: "1rem 1.25rem",
+                    borderRadius: "12px",
+                    marginBottom: "1.5rem",
+                    border: "1px solid rgba(139, 92, 246, 0.2)",
+                  }}>
+                    <div style={{ 
+                      fontSize: "0.85rem", 
+                      color: "#7c3aed", 
+                      fontWeight: 600,
+                      marginBottom: "0.25rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.5px"
+                    }}>
+                      Patient
+                    </div>
+                    <div style={{ 
+                      fontSize: "1.1rem", 
+                      fontWeight: 700, 
+                      color: "#2a3f9d",
+                      fontFamily: "'Inter Tight', sans-serif"
+                    }}>
+                      {passwordChangePatient.firstName} {passwordChangePatient.middleName} {passwordChangePatient.lastName}
+                    </div>
+                    <div style={{ 
+                      fontSize: "0.9rem", 
+                      color: "#64748b",
+                      marginTop: "0.25rem"
+                    }}>
+                      {passwordChangePatient.email}
+                    </div>
+                  </div>
+
+                  <Form onSubmit={handlePasswordChange}>
+                    <Form.Group className="mb-3">
+                      <Form.Label style={{ 
+                        color: "#2a3f9d", 
+                        fontWeight: 700,
+                        fontSize: "0.95rem"
+                      }}>
+                        New Password *
+                      </Form.Label>
+                      <Form.Control
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Enter new password"
+                        required
+                        style={{
+                          borderRadius: "10px",
+                          border: "2px solid #e2e8f0",
+                          padding: "0.75rem 1rem",
+                          fontSize: "0.95rem",
+                          fontWeight: 500,
+                          transition: "all 0.2s ease",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "#8b5cf6";
+                          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(139, 92, 246, 0.1)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "#e2e8f0";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      />
+                      <Form.Text style={{ 
+                        color: "#64748b",
+                        fontSize: "0.85rem",
+                        marginTop: "0.5rem",
+                        display: "block"
+                      }}>
+                        Password must be at least 6 characters long
+                      </Form.Text>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                      <Form.Label style={{ 
+                        color: "#2a3f9d", 
+                        fontWeight: 700,
+                        fontSize: "0.95rem"
+                      }}>
+                        Confirm Password *
+                      </Form.Label>
+                      <Form.Control
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm new password"
+                        required
+                        style={{
+                          borderRadius: "10px",
+                          border: "2px solid #e2e8f0",
+                          padding: "0.75rem 1rem",
+                          fontSize: "0.95rem",
+                          fontWeight: 500,
+                          transition: "all 0.2s ease",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = "#8b5cf6";
+                          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(139, 92, 246, 0.1)";
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.borderColor = "#e2e8f0";
+                          e.currentTarget.style.boxShadow = "none";
+                        }}
+                      />
+                    </Form.Group>
+
+                    {passwordError && (
+                      <div style={{
+                        background: "linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)",
+                        padding: "0.75rem 1rem",
+                        borderRadius: "10px",
+                        border: "1px solid rgba(220, 38, 38, 0.2)",
+                        marginBottom: "1rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem"
+                      }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <circle cx="12" cy="12" r="10" stroke="#dc2626" strokeWidth="2"/>
+                          <path d="M12 8v4M12 16h.01" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"/>
+                        </svg>
+                        <span style={{ 
+                          color: "#dc2626", 
+                          fontWeight: 600,
+                          fontSize: "0.9rem"
+                        }}>
+                          {passwordError}
+                        </span>
+                      </div>
+                    )}
+
+                    <div style={{
+                      background: "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
+                      padding: "1rem",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(245, 158, 11, 0.3)",
+                      marginTop: "1rem",
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "0.5rem"
+                    }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, marginTop: "0.125rem" }}>
+                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="#d97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <div>
+                        <div style={{ 
+                          color: "#92400e", 
+                          fontWeight: 700,
+                          fontSize: "0.9rem",
+                          marginBottom: "0.25rem"
+                        }}>
+                          Super Admin Action
+                        </div>
+                        <div style={{ 
+                          color: "#78350f", 
+                          fontSize: "0.85rem",
+                          lineHeight: "1.5"
+                        }}>
+                          This action will immediately change the patient's password. The patient will need to use this new password to log in.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="d-flex justify-content-end mt-4" style={{ gap: "0.75rem", paddingTop: "1rem" }}>
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setShowChangePasswordModal(false);
+                          setPasswordChangePatient(null);
+                          setNewPassword("");
+                          setConfirmPassword("");
+                          setPasswordError("");
+                        }}
+                        style={{
+                          borderRadius: "10px",
+                          fontWeight: 700,
+                          padding: "0.75rem 1.5rem",
+                          fontSize: "0.95rem",
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="submit"
+                        style={{
+                          borderRadius: "10px",
+                          fontWeight: 700,
+                          fontSize: "0.95rem",
+                          background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+                          border: "none",
+                          color: "#fff",
+                          boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)",
+                          transition: "all 0.2s ease",
+                          padding: "0.75rem 1.5rem",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = "translateY(-2px)";
+                          e.currentTarget.style.boxShadow = "0 6px 16px rgba(139, 92, 246, 0.4)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = "translateY(0)";
+                          e.currentTarget.style.boxShadow = "0 4px 12px rgba(139, 92, 246, 0.3)";
+                        }}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M5 13l4 4L19 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Change Password
+                      </Button>
+                    </div>
+                  </Form>
+                </>
+              )}
+            </Modal.Body>
+          </Modal>
+        )}
         </div>
       </div>
     </div>
