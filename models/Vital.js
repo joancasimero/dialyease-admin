@@ -129,7 +129,10 @@ const vitalSchema = new mongoose.Schema({
   timestamps: true 
 });
 
-// Index for efficient querying
+// Compound unique index to ensure only one vital per patient per day
+vitalSchema.index({ patient: 1, appointmentDate: 1 }, { unique: true });
+
+// Additional indexes for efficient querying
 vitalSchema.index({ patient: 1, appointmentDate: -1 });
 vitalSchema.index({ createdAt: -1 });
 
