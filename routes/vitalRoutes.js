@@ -17,32 +17,10 @@ router.post('/', protect, async (req, res) => {
       });
     }
 
-    // Check if vital already exists for this patient on this date
-    const appointmentDate = new Date(req.body.appointmentDate);
-    const startOfDay = new Date(appointmentDate);
-    startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(appointmentDate);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const existingVital = await Vital.findOne({
-      patient: req.body.patient,
-      appointmentDate: {
-        $gte: startOfDay,
-        $lte: endOfDay
-      }
-    });
-
-    if (existingVital) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'A vital record already exists for this patient today. Each patient can only have one vital record per day.' 
-      });
-    }
-
     // Add nurse field from req.user (set by authMiddleware)
     const vitalData = {
       ...req.body,
-      nurse: req.user._id // <-- Add this line
+      nurse: req.user._id
     };
     const vital = await Vital.create(vitalData);
 
