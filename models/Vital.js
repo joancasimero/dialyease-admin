@@ -67,20 +67,16 @@ const vitalSchema = new mongoose.Schema({
   // Intra-HD Monitoring (multiple records over time)
   intraHdMonitoring: {
     type: [{
-      time: { type: Date, default: Date.now },
-      bloodPressure: { // store as systolic/diastolic
-        systolic: { type: Number },
-        diastolic: { type: Number }
-      },
-      temperature: { type: Number }, // Celsius
-      heartRate: { type: Number },   // bpm
-      vp: { type: Number },          // mmHg
-      ufRemoved: { type: Number },   // mL total removed
-      ufRate: { type: Number },      // mL/hr
-      tmp: { type: Number },         // mmHg
-      bfr: { type: Number },         // Blood Flow Rate (mL/min)
-      heparin: { type: Number },     // Units
-      other: { type: String }
+      bloodPressure: { type: String }, // Format: "120/80"
+      temperature: { type: String },   // Time field (HH:MM format)
+      heartRate: { type: String },     // Heart rate
+      vp: { type: String },            // Venous Pressure
+      ufRemove: { type: String },      // Ultrafiltration removed
+      ufRate: { type: String },        // Ultrafiltration rate
+      tmp: { type: String },           // Transmembrane Pressure
+      bfr: { type: String },           // Blood Flow Rate
+      hepa: { type: String },          // Heparin dosage
+      other: { type: String }          // Other notes
     }],
     required: true
   },
