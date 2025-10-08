@@ -68,7 +68,7 @@ const vitalSchema = new mongoose.Schema({
   intraHdMonitoring: {
     type: [{
       bloodPressure: { type: String }, // Format: "120/80"
-      temperature: { type: String },   // Time field (HH:MM format)
+      time: { type: String },          // Time field (HH:MM format)
       heartRate: { type: String },     // Heart rate
       vp: { type: String },            // Venous Pressure
       ufRemove: { type: String },      // Ultrafiltration removed
