@@ -1180,11 +1180,59 @@ const PatientsPage = () => {
                   <Col md={6}>
                     <Form.Group controlId="bloodType" className="mb-3">
                       <Form.Label style={{ color: "#263a99", fontWeight: 600 }}>Blood Type *</Form.Label>
+                      <Form.Select
+                        name="bloodType"
+                        value={editPatient.bloodType || ""}
+                        onChange={handleInputChange}
+                        required
+                        style={{
+                          borderRadius: 10,
+                          border: "1px solid #e0e7ef",
+                          background: "#fff",
+                          fontWeight: 500,
+                          color: "#263a99",
+                          boxShadow: "0 1px 4px rgba(42,63,157,0.04)",
+                        }}
+                      >
+                        <option value="">Select Blood Type</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="I don't know">I don't know</option>
+                      </Form.Select>
                     </Form.Group>
                   </Col>
                 </Row>
 
                 <Row>
+                  <Col md={6}>
+                    <Form.Group controlId="gender" className="mb-3">
+                      <Form.Label style={{ color: "#263a99", fontWeight: 600 }}>Gender *</Form.Label>
+                      <Form.Select
+                        name="gender"
+                        value={editPatient.gender || ""}
+                        onChange={handleInputChange}
+                        required
+                        style={{
+                          borderRadius: 10,
+                          border: "1px solid #e0e7ef",
+                          background: "#fff",
+                          fontWeight: 500,
+                          color: "#263a99",
+                          boxShadow: "0 1px 4px rgba(42,63,157,0.04)",
+                        }}
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
                   <Col md={6}>
                     <Form.Group controlId="email" className="mb-3">
                       <Form.Label style={{ color: "#263a99", fontWeight: 600 }}>Email *</Form.Label>
