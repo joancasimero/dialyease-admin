@@ -35,7 +35,9 @@ const PatientsPage = () => {
   const [passwordChangePatient, setPasswordChangePatient] = useState(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordError, setPasswordError] = useState(""); 
+  const [passwordError, setPasswordError] = useState("");
+  const [sortBy, setSortBy] = useState("name"); // "name", "schedule"
+  const [scheduleFilter, setScheduleFilter] = useState(""); // "", "MWF", "TTHS" 
 
   useEffect(() => {
     fetchPatients();
@@ -67,11 +69,38 @@ const PatientsPage = () => {
     }
   };
 
-  const filteredPatients = patients.filter((patient) =>
+  // Filter patients by search term
+  const searchFilteredPatients = patients.filter((patient) =>
     `${patient.firstName} ${patient.middleName || ""} ${patient.lastName}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase())
   );
+
+  // Filter by schedule
+  const scheduleFilteredPatients = scheduleFilter
+    ? searchFilteredPatients.filter(p => p.dialysisSchedule === scheduleFilter)
+    : searchFilteredPatients;
+
+  // Sort patients
+  const sortedPatients = [...scheduleFilteredPatients].sort((a, b) => {
+    if (sortBy === "schedule") {
+      // First sort by schedule (MWF comes before TTHS)
+      if (a.dialysisSchedule !== b.dialysisSchedule) {
+        return a.dialysisSchedule === "MWF" ? -1 : 1;
+      }
+      // Then sort alphabetically by name within same schedule
+      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    } else {
+      // Sort alphabetically by name
+      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      return nameA.localeCompare(nameB);
+    }
+  });
+
+  const filteredPatients = sortedPatients;
 
   const indexOfLastPatient = currentPage * patientsPerPage;
   const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
@@ -451,6 +480,173 @@ const PatientsPage = () => {
                 />
               </div>
             </Form.Group>
+          </div>
+
+          {/* Sort and Filter Section */}
+          <div
+            style={{
+              background: "#ffffff",
+              padding: "1.5rem 2rem",
+              borderRadius: "16px",
+              boxShadow: "0 4px 12px rgba(42, 63, 157, 0.08)",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <Row className="g-3 align-items-center">
+              <Col md={6}>
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 6h18M7 12h10m-7 6h4" stroke="#4a6cf7" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                  <div style={{ flex: 1 }}>
+                    <label
+                      style={{
+                        fontSize: "0.85rem",
+                        fontWeight: 700,
+                        color: "#64748b",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                        marginBottom: "0.5rem",
+                        display: "block",
+                      }}
+                    >
+                      Sort By
+                    </label>
+                    <Form.Select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      style={{
+                        borderRadius: "10px",
+                        border: "2px solid #e2e8f0",
+                        padding: "0.75rem 1rem",
+                        fontSize: "0.95rem",
+                        fontWeight: 600,
+                        color: "#2a3f9d",
+                        background: "#f8fafc",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = "#4a6cf7";
+                        e.currentTarget.style.boxShadow = "0 0 0 3px rgba(74, 108, 247, 0.1)";
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = "#e2e8f0";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
+                    >
+                      <option value="name">Alphabetical (A-Z)</option>
+                      <option value="schedule">Dialysis Schedule</option>
+                    </Form.Select>
+                  </div>
+                </div>
+              </Col>
+              <Col md={6}>
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" stroke="#4a6cf7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <div style={{ flex: 1 }}>
+                    <label
+                      style={{
+                        fontSize: "0.85rem",
+                        fontWeight: 700,
+                        color: "#64748b",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
+                        marginBottom: "0.5rem",
+                        display: "block",
+                      }}
+                    >
+                      Filter by Schedule
+                    </label>
+                    <Form.Select
+                      value={scheduleFilter}
+                      onChange={(e) => {
+                        setScheduleFilter(e.target.value);
+                        setCurrentPage(1); // Reset to first page when filtering
+                      }}
+                      style={{
+                        borderRadius: "10px",
+                        border: "2px solid #e2e8f0",
+                        padding: "0.75rem 1rem",
+                        fontSize: "0.95rem",
+                        fontWeight: 600,
+                        color: "#2a3f9d",
+                        background: "#f8fafc",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = "#4a6cf7";
+                        e.currentTarget.style.boxShadow = "0 0 0 3px rgba(74, 108, 247, 0.1)";
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = "#e2e8f0";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
+                    >
+                      <option value="">All Schedules</option>
+                      <option value="MWF">MWF (Monday, Wednesday, Friday)</option>
+                      <option value="TTHS">TTHS (Tuesday, Thursday, Saturday)</option>
+                    </Form.Select>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+            {(scheduleFilter || sortBy === "schedule") && (
+              <div
+                style={{
+                  marginTop: "1rem",
+                  padding: "0.75rem 1rem",
+                  background: "linear-gradient(135deg, #e0e7ff 0%, #dbeafe 100%)",
+                  borderRadius: "10px",
+                  border: "1px solid rgba(74, 108, 247, 0.2)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.75rem",
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="#4a6cf7" strokeWidth="2"/>
+                  <path d="M12 16v-4m0-4h.01" stroke="#4a6cf7" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                <div style={{ flex: 1 }}>
+                  <span style={{ color: "#2a3f9d", fontWeight: 700, fontSize: "0.95rem" }}>
+                    {filteredPatients.length} patient{filteredPatients.length !== 1 ? 's' : ''} found
+                  </span>
+                  {scheduleFilter && (
+                    <span style={{ color: "#64748b", fontSize: "0.9rem", marginLeft: "0.5rem" }}>
+                      • Filtered by {scheduleFilter}
+                    </span>
+                  )}
+                </div>
+                {scheduleFilter && (
+                  <Button
+                    size="sm"
+                    onClick={() => setScheduleFilter("")}
+                    style={{
+                      borderRadius: "8px",
+                      fontWeight: 700,
+                      fontSize: "0.85rem",
+                      padding: "0.5rem 1rem",
+                      border: "none",
+                      background: "#4a6cf7",
+                      color: "#fff",
+                      transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "#2a3f9d";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "#4a6cf7";
+                    }}
+                  >
+                    Clear Filter
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Active Patients Table */}
