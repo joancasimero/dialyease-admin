@@ -544,10 +544,8 @@ const confirmManualCheckIn = async () => {
   setAttendanceLoading(true);
   try {
     const todayStr = getPhilippineDateStr();
-    // Get Philippines time for the time field as well
-    const now = new Date();
-    const phTime = new Date(now.getTime() + (8 * 60 - now.getTimezoneOffset()) * 60000);
-    const timeStr = phTime.toLocaleTimeString('en-US', { hour12: false }).slice(0, 5);
+    // Get Philippines time using moment-timezone
+    const timeStr = moment().tz('Asia/Manila').format('HH:mm');
     
     await api.post('/attendance/mark', {
       patientId: selectedPatientId,
@@ -602,9 +600,7 @@ const confirmCancelCheckIn = async () => {
 };
 
 function getPhilippineDateStr() {
-  const now = new Date();
-  const phTime = new Date(now.getTime() + (8 * 60 - now.getTimezoneOffset()) * 60000);
-  return phTime.toISOString().split('T')[0];
+  return moment().tz('Asia/Manila').format('YYYY-MM-DD');
 }
 
   return (
