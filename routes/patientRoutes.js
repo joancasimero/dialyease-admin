@@ -920,7 +920,7 @@ router.put('/:id/change-password', async (req, res) => {
     if (!newPassword || newPassword.length < 6) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 6 characters long'
+        message: 'Password must be at least 9 characters long'
       });
     }
 
